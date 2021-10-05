@@ -21,6 +21,17 @@ public class LongLat {
     /** The value which all longitudes must be strictly greater than */
     public static final double MIN_LATITUDE = 55.942617;
 
+    /** The maximum distance allowed in degrees between two points for them to be 'close to' one another */
+    public static final double DISTANCE_TOLERANCE = 0.00015;
+
+    public static final int ANGLE_SCALE = 10;
+
+    public static final int MAX_ANGLE = 350;
+
+    public static final int MIN_ANGLE = 0;
+
+    public static final int HOVERING_ANGLE = -999;
+
     /** The longitude component of the coordinate */
     public double longitude;
 
@@ -67,5 +78,35 @@ public class LongLat {
         Objects.requireNonNull(point, "Coordinate may not be null");
 
         return Math.hypot(longitude - point.longitude, latitude - point.latitude);
+    }
+
+    /**
+     * Determines if one LongLat instance is 'close to' another i.e. within DISTANCE_TOLERANCE degrees
+     *
+     * @param point which is being checked to see if it is 'close to' the instance
+     *              calling the method
+     * @throws NullPointerException if the LongLat instance passed is null
+     * @return true if the instance calling the method is close to point, false otherwise
+     */
+    public boolean closeTo(LongLat point){
+        Objects.requireNonNull(point, "Coordinate may not be null");
+
+        return this.distanceTo(point) < DISTANCE_TOLERANCE;
+    }
+
+    public LongLat nextPosition(int angle){
+        if(angle == HOVERING_ANGLE){
+            return new LongLat(this.longitude, this.latitude);
+        }
+        else if(!(angle % ANGLE_SCALE == 0)){
+            throw new IllegalArgumentException(String.format("Drone can only travel on bearings that are a multiple of %d.",ANGLE_SCALE));
+        }
+        else if(angle < MIN_ANGLE || angle > MAX_ANGLE){
+            throw new IllegalArgumentException(String.format("Drone must fly on a bearing between %d and %d degrees.",MIN_ANGLE,MAX_ANGLE));
+        }
+        else{
+
+        }
+
     }
 }
