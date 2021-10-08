@@ -24,13 +24,20 @@ public class LongLat {
     /** The maximum distance allowed in degrees between two points for them to be 'close to' one another */
     public static final double DISTANCE_TOLERANCE = 0.00015;
 
+    /** The number of which any drone move's direction in degrees must be a scalar multiple of */
     public static final int ANGLE_SCALE = 10;
 
+    /** The largest bearing on which the drone can move */
     public static final int MAX_ANGLE = 350;
 
+    /** The smallest bearing on which the drone can move */
     public static final int MIN_ANGLE = 0;
 
+    /** The special 'junk' value to represent when the drone is hovering */
     public static final int HOVERING_ANGLE = -999;
+
+    /** The length of any move the drone makes in degrees */
+    public static final double MOVE_DISTANCE = 0.00015;
 
     /** The longitude component of the coordinate */
     public double longitude;
@@ -77,7 +84,7 @@ public class LongLat {
     public double distanceTo(LongLat point){
         Objects.requireNonNull(point, "Coordinate may not be null");
 
-        return Math.hypot(longitude - point.longitude, latitude - point.latitude);
+        return Math.hypot(this.longitude - point.longitude, this.latitude - point.latitude);
     }
 
     /**
@@ -94,6 +101,14 @@ public class LongLat {
         return this.distanceTo(point) < DISTANCE_TOLERANCE;
     }
 
+    /**
+     * Calculates the next position of the drone after a move
+     *
+     * @param angle the direction in which the move is to be made in degrees
+     * @throws IllegalArgumentException if the angle provided is not a multiple of the ANGLE_SCALE scaling constant
+     *                                  or if the angle lies outside the range [0,350]
+     * @return a LongLat object representing the longitude and latitude of the drone after the move
+     */
     public LongLat nextPosition(int angle){
         if(angle == HOVERING_ANGLE){
             return new LongLat(this.longitude, this.latitude);
@@ -102,11 +117,12 @@ public class LongLat {
             throw new IllegalArgumentException(String.format("Drone can only travel on bearings that are a multiple of %d.",ANGLE_SCALE));
         }
         else if(angle < MIN_ANGLE || angle > MAX_ANGLE){
-            throw new IllegalArgumentException(String.format("Drone must fly on a bearing between %d and %d degrees.",MIN_ANGLE,MAX_ANGLE));
+            throw new IllegalArgumentException(String.format("Drone must fly on a bearing between %d and %d degrees inclusive.",MIN_ANGLE,MAX_ANGLE));
         }
         else{
-
+            double newLongitude = this.longitude + MOVE_DISTANCE * Math.cos(Math.toRadians(angle));
+            double newLatitude = this.latitude + MOVE_DISTANCE * Math.sin(Math.toRadians(angle));
+            return new LongLat(newLongitude, newLatitude);
         }
-
     }
 }
