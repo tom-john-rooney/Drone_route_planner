@@ -31,9 +31,9 @@ public class LongLat {
     public static final double MOVE_DISTANCE = 0.00015;
 
     /** The longitude component of the coordinate */
-    public double longitude;
+    public final double longitude;
     /** The latitude component of the coordinate */
-    public double latitude;
+    public final double latitude;
 
     /**
      * Initialises a new LongLat instance.
@@ -107,6 +107,7 @@ public class LongLat {
 
     public void isPointNull(LongLat point){
         if(point == null){
+            System.err.println("Fatal error: null coordinate");
             System.exit(1);
         }
     }
