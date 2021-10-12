@@ -7,10 +7,12 @@ public class Shop {
     String location;
     ArrayList<Item> menu;
 
+    public Shop() {}
+
     public static class Item{
         String item;
         int pence;
+
+        public Item() {}
     }
-
-
 }

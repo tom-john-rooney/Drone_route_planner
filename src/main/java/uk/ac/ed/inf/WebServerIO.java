@@ -2,6 +2,7 @@ package uk.ac.ed.inf;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -11,6 +12,7 @@ public class WebServerIO {
 
     private static final HttpClient client = HttpClient.newHttpClient();
     public static final int OK_RESPONSE_CODE = 200;
+    public static final String URL_PREFIX = "http://";
 
     public WebServerIO(){}
 
@@ -24,7 +26,7 @@ public class WebServerIO {
         }
     }
 
-    public String get(String urlString){
+    public String getFrom(String urlString){
         try{
             HttpRequest request = buildRequest(urlString);
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -46,6 +48,10 @@ public class WebServerIO {
 
     public boolean isGoodCode(int responseCode){
         return responseCode == OK_RESPONSE_CODE;
+    }
+
+    public String buildURL(String machine, String port, String suffix){
+        return URL_PREFIX + machine + ":" + port + suffix;
     }
 
 }
