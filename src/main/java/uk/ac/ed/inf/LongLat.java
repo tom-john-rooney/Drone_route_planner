@@ -1,7 +1,5 @@
 package uk.ac.ed.inf;
 
-import java.util.Objects;
-
 /**
  * Represents a coordinate pair.
  *
@@ -105,6 +103,11 @@ public class LongLat {
         }
     }
 
+    /**
+     * Handles null points by exiting the application and displaying an error message
+     *
+     * @param point being checked for null status
+     */
     public void isPointNull(LongLat point){
         if(point == null){
             System.err.println("Fatal error: null coordinate");

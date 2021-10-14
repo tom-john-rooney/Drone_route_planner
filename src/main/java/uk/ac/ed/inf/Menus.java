@@ -1,13 +1,6 @@
 package uk.ac.ed.inf;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-
 
 /**
  *
@@ -24,35 +17,28 @@ public class Menus {
         this.port = port;
     }
 
-    public void getDeliveryCost(String... items){
+    public int getDeliveryCost(String... orderItems){
         ArrayList<ArrayList<Shop.Item>> menus = getMenus();
-        alphabeticalSortMenus(menus);
+        for(ArrayList<Shop.Item> menu : menus){
+            Shop.Item.alphabeticalSort(menu);
+        }
+        int deliveryCost = 0;
+
+        for(String orderItem : orderItems){
+            Shop.Item searchItem = new Shop.Item(orderItem, 0);
+            deliveryCost += searchItem.findItemCost(menus);
+        }
+
+        return deliveryCost + STANDARD_DELIVERY_PENCE;
     }
 
-    public ArrayList<ArrayList<Shop.Item>> getMenus(){
-        WebServerIO server = new WebServerIO();
+    private ArrayList<ArrayList<Shop.Item>> getMenus(){
+        WebServer server = WebServer.getInstance();
         String url = server.buildURL(this.machine, this.port, MENUS_URL);
-        ArrayList<Shop> shops = parseShops(server.getFrom(url));
-        return compileMenus(shops);
+        ShopParser parser = ShopParser.getInstance();
+        ArrayList<Shop> shops = (ArrayList<Shop>) parser.parseJson(server.getFrom(url));
+        return Shop.compileMenus(shops);
     }
 
-    public ArrayList<ArrayList<Shop.Item>> compileMenus(ArrayList<Shop> shops){
-        ArrayList<ArrayList<Shop.Item>> menus = new ArrayList<ArrayList<Shop.Item>>();
-        for(Shop shop : shops){
-            menus.add(shop.menu);
-        }
-        return menus;
-    }
 
-    public ArrayList<Shop> parseShops(String jsonListString){
-        Type listType = new TypeToken<ArrayList<Shop>>() {}.getType();
-        ArrayList<Shop> shopList = new Gson().fromJson(jsonListString, listType);
-        return shopList;
-    }
-
-    public void alphabeticalSortMenus(ArrayList<ArrayList<Shop.Item>> menus){
-        for(ArrayList<Shop.Item> menu : menus) {
-            Collections.sort(menu, (itemOne, itemTwo) -> itemOne.item.compareTo(itemTwo.item));
-        }
-    }
 }
