@@ -76,7 +76,7 @@ public class LongLat {
      *
      * This means that the two instances are within DISTANCE_TOLERANCE degrees of each other.
      *
-     * @param point the point which is may or may not be 'close to' the calling instance
+     * @param point the point which may or may not be 'close to' the calling instance
      * @return true if the instance calling the method is 'close to' point, false otherwise
      */
     public boolean closeTo(LongLat point){

@@ -11,15 +11,15 @@ import java.net.http.HttpResponse.BodyHandlers;
  * Methods in this class handle all functionality relating to the web server.
  */
 public class WebServer {
-    // The single HttpClient instance that is used in communication with the server.
+    /** The single HttpClient instance that is used in communication with the server. */
     private static final HttpClient client = HttpClient.newHttpClient();
     /** The response code received from the server when a request with no errors is made */
     public static final int OK_RESPONSE_CODE = 200;
     /** Every URL the server works with begins with this */
     public static final String URL_PREFIX = "http://";
 
-    /** Default constructor */
-    public WebServer(){}
+    /** Default constructor to prevent instantiation */
+    private WebServer(){}
 
     /**
      * Builds an HttpRequest for the client instance to send to the server.
@@ -29,17 +29,15 @@ public class WebServer {
      * The user is informed of the reason for termination in this case.
      *
      * @param urlString the URL to which the request is to be made
-     * @return the request to be sent by the client if building is successful. The method
-     *         contains a null return statement in the catch block is there as the compiler
-     *         requires it to be. It never actually returns as the application exits before
-     *         this can happen.
+     * @return the request to be sent by the client if building is successful.
      */
-    public HttpRequest buildRequest(String urlString){
+    public static HttpRequest buildRequest(String urlString){
         try {
             return HttpRequest.newBuilder().uri(URI.create(urlString)).build();
         } catch(IllegalArgumentException | NullPointerException e){
             System.err.println("Fatal error: " + e.getMessage());
             System.exit(1);
+            // Return statement required by compiler, never actually returns
             return null;
         }
     }
@@ -54,11 +52,9 @@ public class WebServer {
      * The user is informed of the reason for termination and the exception message.
      *
      * @param urlString the URL from which content is to be fetched
-     * @return the content contained on the server at the specified URL. The null return
-     *         statements are in place as they are required by the compiler. They never
-     *         actually return as the application terminates before this can happen.
+     * @return the content contained on the server at the specified URL.
      */
-    public String getFrom(String urlString){
+    public static String getFrom(String urlString){
         try{
             HttpRequest request = buildRequest(urlString);
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -68,12 +64,14 @@ public class WebServer {
             }else{
                 System.err.println("Fatal error: Bad HTTP response code (" + response.statusCode() + ").");
                 System.exit(1);
+                // Return statement required by compiler, never actually returns
                 return null;
             }
 
         } catch (IOException | InterruptedException e) {
             System.err.println("Fatal error: " + e.getMessage());
             System.exit(1);
+            // Return statement required by compiler, never actually returns
             return null;
         }
     }
@@ -84,7 +82,7 @@ public class WebServer {
      * @param responseCode the response code from the server when the client makes the request
      * @return true if the response code is acceptable, false otherwise
      */
-    private boolean isGoodResponse(int responseCode){
+    private static boolean isGoodResponse(int responseCode){
         return responseCode == OK_RESPONSE_CODE;
     }
 
@@ -97,7 +95,7 @@ public class WebServer {
      *               request is stored
      * @return the fully assembled URL
      */
-    public String buildURL(String machine, String port, String suffix){
+    public static String buildURL(String machine, String port, String suffix){
         return URL_PREFIX + machine + ":" + port + suffix;
     }
 

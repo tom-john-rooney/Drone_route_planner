@@ -67,10 +67,9 @@ public class Menus {
      * @return an ArrayList of ArrayLists of Item objects i.e, an ArrayList of menus
      */
     private ArrayList<ArrayList<Shop.Item>> getMenus(){
-        WebServer server = new WebServer();
-        String url = server.buildURL(this.machine, this.port, MENUS_URL);
-        // Contents of json file parsed to an ArrayList of shop objects
-        ArrayList<Shop> shops = (ArrayList<Shop>) JsonParser.parseJsonList(server.getFrom(url));
+        String url = WebServer.buildURL(this.machine, this.port, MENUS_URL);
+        // Contents of json file from web server parsed to an ArrayList of shop objects
+        ArrayList<Shop> shops = (ArrayList<Shop>) JsonParser.parseJsonList(WebServer.getFrom(url));
         return Shop.compileMenus(shops);
     }
 

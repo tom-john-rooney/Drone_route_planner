@@ -10,6 +10,10 @@ import java.util.ArrayList;
  * The methods in this class all handle different kinds of JSON parsing.
  */
 public class JsonParser {
+
+    /** Default constructor to prevent instantiation */
+    private JsonParser() {}
+
     /**
      * Takes an input JSON list string and parses this to an ArrayList of objects
      * of an unspecified type.

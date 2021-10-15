@@ -3,7 +3,6 @@ package uk.ac.ed.inf;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * A shop from which a user of the system can order lunch items.
