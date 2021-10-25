@@ -2,6 +2,8 @@ package uk.ac.ed.inf;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class AppTest {
@@ -136,6 +138,7 @@ public class AppTest {
         LongLat nextPosition = appletonTower.nextPosition(-999);
         assertTrue(approxEq(nextPosition, appletonTower));
     }
+
 
     @Test
     public void testMenusOne() {
