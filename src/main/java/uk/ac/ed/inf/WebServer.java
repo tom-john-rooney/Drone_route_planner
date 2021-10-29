@@ -8,7 +8,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 
 /**
- * Methods in this class handle all functionality relating to the web server.
+ * Methods in this class handle all functionality relating to web server IO.
  */
 public class WebServer {
     /** The single HttpClient instance that is used in communication with the server. */
