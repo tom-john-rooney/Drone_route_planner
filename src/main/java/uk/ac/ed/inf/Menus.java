@@ -3,7 +3,7 @@ package uk.ac.ed.inf;
 import java.util.ArrayList;
 
 /**
- * Handles functionality relating to the menus section of the web server.
+ * Represents the items for sale in participating shops
  *
  * Does not handle the parsing of the web server content once it has been
  * requested and fetched from the server, that is done by the JsonParser.
