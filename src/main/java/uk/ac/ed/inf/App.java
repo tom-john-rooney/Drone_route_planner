@@ -1,6 +1,7 @@
 package uk.ac.ed.inf;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Hello world!
@@ -10,9 +11,16 @@ public class App
 {
     public static void main( String[] args )
     {
-        ArrayList<Order> orders = Database.readOrders("01/10/2022");
+        System.out.println("Please enter the date in format dd/mm/yyyy: ");
+        Scanner in = new Scanner(System.in);
+        String input_str = in.nextLine();
+        Menus menus = new Menus("localhost", "9898");
+
+        ArrayList<Order> orders = Database.readOrders(input_str);
         for(Order order:orders) {
             System.out.println(order.toString());
+            System.out.print(menus.getDeliveryCost(order.contents.toArray(new String[0])));
+            System.out.println("\n");
         }
     }
 }
