@@ -58,18 +58,24 @@ public class Menus {
     }
 
     /**
-     * Fetches the relevant web server content.
+     * Fetches the details of each shop participating in the service from the web server.
      *
-     * A json file containing details of shops and their menus is retrieved from the port of the
-     * web server specified by the Menus instance's fields. The parsing of this file is handled by
-     * JsonParsing. After parsing, the menu of each shop is extrapolated and compiled.
+     * @return an ArrayList of Shop objects
+     */
+    public ArrayList<Shop> getShopsWithMenus(){
+        String url = WebServer.buildURL(this.machine, this.port, MENUS_URL);
+        // Contents of json file from web parsed to an ArrayList of shop objects
+        ArrayList<Shop> shopsWithMenus = (ArrayList<Shop>) JsonParsing.parseJsonList(WebServer.getFrom(url));
+        return shopsWithMenus;
+    }
+
+    /**
+     * Fetches the menus of shops participating in the service from the web server.
      *
      * @return an ArrayList of ArrayLists of Item objects i.e, an ArrayList of menus
      */
     private ArrayList<ArrayList<Shop.Item>> getMenus(){
-        String url = WebServer.buildURL(this.machine, this.port, MENUS_URL);
-        // Contents of json file from web server parsed to an ArrayList of shop objects
-        ArrayList<Shop> shops = (ArrayList<Shop>) JsonParsing.parseJsonList(WebServer.getFrom(url));
+        ArrayList<Shop> shops = getShopsWithMenus();
         return Shop.compileMenus(shops);
     }
 
