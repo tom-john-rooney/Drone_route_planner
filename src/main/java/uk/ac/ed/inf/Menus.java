@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Represents the items for sale in participating shops
  *
  * Does not handle the parsing of the web server content once it has been
- * requested and fetched from the server, that is done by the JsonParser.
+ * requested and fetched from the server, that is done by the JsonParsing.
  */
 public class Menus {
     /** The URL 'suffix' specifying the location of the menus content on the web server. */
@@ -62,14 +62,14 @@ public class Menus {
      *
      * A json file containing details of shops and their menus is retrieved from the port of the
      * web server specified by the Menus instance's fields. The parsing of this file is handled by
-     * JsonParser. After parsing, the menu of each shop is extrapolated and compiled.
+     * JsonParsing. After parsing, the menu of each shop is extrapolated and compiled.
      *
      * @return an ArrayList of ArrayLists of Item objects i.e, an ArrayList of menus
      */
     private ArrayList<ArrayList<Shop.Item>> getMenus(){
         String url = WebServer.buildURL(this.machine, this.port, MENUS_URL);
         // Contents of json file from web server parsed to an ArrayList of shop objects
-        ArrayList<Shop> shops = (ArrayList<Shop>) JsonParser.parseJsonList(WebServer.getFrom(url));
+        ArrayList<Shop> shops = (ArrayList<Shop>) JsonParsing.parseJsonList(WebServer.getFrom(url));
         return Shop.compileMenus(shops);
     }
 

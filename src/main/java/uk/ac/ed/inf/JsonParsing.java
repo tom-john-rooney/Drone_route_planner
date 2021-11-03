@@ -7,12 +7,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
- * The methods in this class all handle different kinds of JSON parsing.
+ * The methods in this class handle different kinds of JSON parsing using
+ * Google's gson parser.
  */
-public class JsonParser {
+public class JsonParsing {
 
     /** Default constructor to prevent instantiation */
-    private JsonParser() {}
+    private JsonParsing() {}
 
     /**
      * Takes an input JSON list string and parses this to an ArrayList of objects
