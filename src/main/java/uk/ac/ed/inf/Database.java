@@ -100,6 +100,7 @@ public class Database {
      */
     public static ArrayList<Order> readOrders(String date) {
         try {
+            Menus m = new Menus("localhost","9898");
             PreparedStatement psReadOrdersQuery = buildReadOrdersQuery(date);
             ArrayList<Order> orderList = new ArrayList<>();
             ResultSet rs = psReadOrdersQuery.executeQuery();
@@ -108,7 +109,8 @@ public class Database {
                 String customerId = rs.getString("customer");
                 String deliveryLoc = rs.getString("deliverTo");
                 ArrayList<String> contents = readOrderContents(orderId);
-                orderList.add(new Order(orderId, customerId, deliveryLoc, contents));
+                int orderValue = m.getDeliveryCost(contents.toArray(new String[0]));
+                orderList.add(new Order(orderId, customerId, deliveryLoc, contents,orderValue));
             }
             return orderList;
         } catch (SQLException e) {

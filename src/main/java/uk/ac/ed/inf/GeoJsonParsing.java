@@ -1,8 +1,6 @@
 package uk.ac.ed.inf;
 
 import com.mapbox.geojson.*;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
