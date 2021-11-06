@@ -1,6 +1,5 @@
 package uk.ac.ed.inf;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,13 +14,14 @@ public class App
         System.out.println("Please enter the date in format dd/mm/yyyy: ");
         Scanner in = new Scanner(System.in);
         String input_str = in.nextLine();
-        Menus menus = new Menus("localhost", "9898");
+        Menus menus = new Menus("localhost", "80");
+        WhatThreeWords w3w = new WhatThreeWords("localhost","80");
 
         ArrayList<Order> orders = Database.readOrders(input_str);
         Order.sortByValue(orders);
 
-        for(Order order : orders){
-            System.out.println(order.toString());
-        }
+        ArrayList<Shop> shops = menus.getShopsWithMenus();
+
+        System.out.println(w3w.getDetailsFromServer("army.monks.grapes").toString());
     }
 }

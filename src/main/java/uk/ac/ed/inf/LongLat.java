@@ -29,19 +29,24 @@ public class LongLat {
     public static final double MOVE_DISTANCE = 0.00015;
 
     /** The longitude component of the coordinate */
-    public final double longitude;
+    public final double lng;
     /** The latitude component of the coordinate */
-    public final double latitude;
+    public final double lat;
 
     /**
      * Constructor to initialise a new LongLat instance.
      *
-     * @param longitude the longitude component of the coordinate being initialised
-     * @param latitude  the latitude component of the coordinate being initialised
+     * @param lng the longitude component of the coordinate being initialised
+     * @param lat the latitude component of the coordinate being initialised
      */
-    public LongLat(double longitude, double latitude){
-        this.longitude = longitude;
-        this.latitude = latitude;
+    public LongLat(double lng, double lat){
+        this.lng = lng;
+        this.lat = lat;
+    }
+
+    @Override
+    public String toString(){
+        return "longitude: " + this.lng + "\n" + "latitude: " + this.lat;
     }
 
     /**
@@ -54,10 +59,10 @@ public class LongLat {
      * @return true if coordinate lies within the confinement area, false otherwise
      */
     public boolean isConfined(){
-        boolean longitudeConfined = (longitude < MAX_LONGITUDE) && (longitude > MIN_LONGITUDE);
-        boolean latitudeConfined = (latitude < MAX_LATITUDE) && (latitude > MIN_LATITUDE);
+        boolean lngConfined = (lng < MAX_LONGITUDE) && (lng > MIN_LONGITUDE);
+        boolean latConfined = (lat < MAX_LATITUDE) && (lat > MIN_LATITUDE);
 
-        return longitudeConfined && latitudeConfined;
+        return lngConfined && latConfined;
     }
 
     /**
@@ -68,7 +73,7 @@ public class LongLat {
      */
     public double distanceTo(LongLat point){
         isPointNull(point);
-        return Math.hypot(this.longitude - point.longitude, this.latitude - point.latitude);
+        return Math.hypot(this.lng - point.lng, this.lat - point.lat);
     }
 
     /**
@@ -97,15 +102,15 @@ public class LongLat {
      */
     public LongLat nextPosition(int angle){
         if(angle == JUNK_ANGLE){
-            return new LongLat(this.longitude, this.latitude);
+            return new LongLat(this.lng, this.lat);
         }
         else if(!(angle % ANGLE_SCALE == 0) || angle > MAX_ANGLE || angle < MIN_ANGLE){
             return null;
         }
         else{
-            double newLongitude = this.longitude + MOVE_DISTANCE * Math.cos(Math.toRadians(angle));
-            double newLatitude = this.latitude + MOVE_DISTANCE * Math.sin(Math.toRadians(angle));
-            return new LongLat(newLongitude, newLatitude);
+            double newlng = this.lng + MOVE_DISTANCE * Math.cos(Math.toRadians(angle));
+            double newlat = this.lat + MOVE_DISTANCE * Math.sin(Math.toRadians(angle));
+            return new LongLat(newlng, newlat);
         }
     }
 
