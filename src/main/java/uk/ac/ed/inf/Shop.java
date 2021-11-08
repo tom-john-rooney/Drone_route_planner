@@ -1,8 +1,6 @@
 package uk.ac.ed.inf;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
 /**
  * A shop from which a user of the system can order lunch items.
@@ -18,7 +16,7 @@ public class Shop {
      */
     public final String location;
     /** The menu of the shop containing all the items available for order from it. */
-    public final ArrayList<Item> menu;
+    private final ArrayList<Item> menu;
 
     /**
      * Constructor to initialise a new Shop instance.
@@ -34,17 +32,16 @@ public class Shop {
     }
 
     /**
-     * Takes a list of shops and compiles all their menus into one ArrayList.
+     * Converts a shop object's menu ArrayList into a HashMap for efficient lookup.
      *
-     * @param shops the shops whose menus are to be compiled
-     * @return An ArrayList containing each menu of each shop in shops
+     * @return the HashMap version of the menu
      */
-    public static ArrayList<ArrayList<Item>> compileMenus(ArrayList<Shop> shops){
-        ArrayList<ArrayList<Item>> menus = new ArrayList<>();
-        for(Shop shop : shops){
-            menus.add(shop.menu);
+    public HashMap<String, Integer> hashMenu(){
+        HashMap<String,Integer> hashMenu = new HashMap<>();
+        for(Item i: this.menu){
+            hashMenu.put(i.item, Integer.valueOf(i.pence));
         }
-        return menus;
+        return hashMenu;
     }
 
     /**
@@ -54,11 +51,6 @@ public class Shop {
      * focus on manipulating and searching them.
      */
     public static class Item{
-        /** Dummy item name value for search */
-        public static final String DUMMY_ITEM = "";
-        /** Dummy pence value for search */
-        public static final int DUMMY_PENCE = 0;
-
         /** The name of the item */
         public final String item;
         /** The price of the item per unit in pence */
@@ -73,35 +65,6 @@ public class Shop {
         public Item(String item, int pence){
             this.item = item;
             this.pence = pence;
-        }
-
-        /**
-         * Sorts an ArrayList of items into alphabetical order based on their names.
-         *
-         * @param items the list of items to be sorted
-         */
-        public static void alphabeticalSort(ArrayList<Item> items){
-            Collections.sort(items, Comparator.comparing(itemObj -> itemObj.item));
-        }
-
-        /**
-         * Takes an ArrayList of ArrayLists of items i.e, an ArrayList of shop menus,
-         * searches them in turn using a binary search to see if they contain the calling
-         * instance.
-         *
-         * @param menus an ArrayList of ArrayLists of items which is to be searched
-         * @return the Item object which has the same name as the calling instance if found in
-         *         any of the 'menus', a dummy item object otherwise
-         */
-        public Item findItemByName(ArrayList<ArrayList<Item>> menus){
-            for(ArrayList<Item> menu: menus) {
-                int binSearchResIndex = Collections.binarySearch(menu, this, Comparator.comparing(itemObj -> itemObj.item));
-                // if found
-                if (binSearchResIndex >= 0) {
-                    return menu.get(binSearchResIndex);
-                }
-            }
-            return new Item(DUMMY_ITEM,DUMMY_PENCE);
         }
     }
 }

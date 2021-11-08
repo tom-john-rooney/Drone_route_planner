@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 public class AppTest {
-/**
+
     @Test
     public void testIsConfinedTrueA(){
         LongLat appletonTower = new LongLat(-3.191594,55.943658);
@@ -55,8 +55,8 @@ public class AppTest {
 
 
     private boolean approxEq(LongLat l1, LongLat l2) {
-        return approxEq(l1.longitude, l2.longitude) &&
-                approxEq(l1.latitude, l2.latitude);
+        return approxEq(l1.lng, l2.lat) &&
+                approxEq(l1.lng, l2.lat);
     }
 
     @Test
@@ -204,5 +204,5 @@ public class AppTest {
         assertEquals(totalCost, 4 * 460 + 50);
     }
 
-*/
+
 }

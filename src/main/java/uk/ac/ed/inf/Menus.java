@@ -1,6 +1,8 @@
 package uk.ac.ed.inf;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Represents the items for sale in participating shops
@@ -13,6 +15,8 @@ public class Menus {
     public static final String MENUS_URL = "/menus/menus.json";
     /** The standard delivery fee charged to users for every delivery made by the drone. */
     public static final int STANDARD_DELIVERY_PENCE = 50;
+    /** A HashMap storing merging all the menus of each shop in the system into one. */
+    private HashMap<String, Integer> combinedMenusMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
     public final String machine;
@@ -29,6 +33,7 @@ public class Menus {
     public Menus(String machine, String port){
         this.machine = machine;
         this.port = port;
+        this.getMenus();
     }
 
     /**
@@ -42,16 +47,11 @@ public class Menus {
      * @return the total cost of ordering each item in 'orderItems' (including the delivery charge)
      */
     public int getDeliveryCost(String... orderItems){
-        ArrayList<ArrayList<Shop.Item>> menus = getMenus();
-        for(ArrayList<Shop.Item> menu : menus){
-            // Required as a binary search is used
-            Shop.Item.alphabeticalSort(menu);
-        }
-
         int deliveryCost = 0;
         for(String orderItem : orderItems){
-            Shop.Item searchItem = new Shop.Item(orderItem, Shop.Item.DUMMY_PENCE);
-            deliveryCost += searchItem.findItemByName(menus).pence;
+            if(combinedMenusMap.get(orderItem) != null){
+                deliveryCost += combinedMenusMap.get(orderItem);
+            }
         }
 
         return deliveryCost + STANDARD_DELIVERY_PENCE;
@@ -72,11 +72,15 @@ public class Menus {
     /**
      * Fetches the menus of shops participating in the service from the web server.
      *
-     * @return an ArrayList of ArrayLists of Item objects i.e, an ArrayList of menus
+     * The HashMap menu of each shop is concatenated and are stored as a HashMap in the
+     * combinedMenusMap field.
      */
-    private ArrayList<ArrayList<Shop.Item>> getMenus(){
-        ArrayList<Shop> shops = getShopsWithMenus();
-        return Shop.compileMenus(shops);
+    private void getMenus(){
+        ArrayList<Shop> shops = this.getShopsWithMenus();
+        for(Shop s : shops){
+            HashMap<String,Integer> sMenuMap = s.hashMenu();
+            combinedMenusMap.putAll(sMenuMap);
+        }
     }
 
 
