@@ -19,12 +19,16 @@ public class JsonParsing {
      * Takes an input JSON list string and parses this to an ArrayList of objects
      * of an unspecified type.
      *
-     * @param jsonListString the string containing the content to be parsed
+     * @param jsonShopLstStr the string containing the content to be parsed
      * @return an ArrayList of objects of an unspecified type
      */
-    public static ArrayList<?> parseJsonList(String jsonListString) {
+    public static ArrayList<Shop> parseShops(String jsonShopLstStr) {
         Type listType = new TypeToken<ArrayList<Shop>>() {}.getType();
-        ArrayList<?> parsedList = new Gson().fromJson(jsonListString, listType);
+        ArrayList<Shop> parsedList = new Gson().fromJson(jsonShopLstStr, listType);
         return parsedList;
+    }
+
+    public static What3WordsLoc parseWordsDetails(String wordsDetailsStr){
+        return new Gson().fromJson(wordsDetailsStr, What3WordsLoc.class);
     }
 }

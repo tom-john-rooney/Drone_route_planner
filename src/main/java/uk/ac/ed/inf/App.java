@@ -14,14 +14,11 @@ public class App
         System.out.println("Please enter the date in format dd/mm/yyyy: ");
         Scanner in = new Scanner(System.in);
         String input_str = in.nextLine();
-        Menus menus = new Menus("localhost", "80");
-        WhatThreeWords w3w = new WhatThreeWords("localhost","80");
+        Menus menus = new Menus("localhost", "9898");
+        Words w3w = new Words("localhost","9898");
 
-        ArrayList<Order> orders = Database.readOrders(input_str);
-        Order.sortByValue(orders);
 
-        ArrayList<Shop> shops = menus.getShopsWithMenus();
-
-        System.out.println(w3w.getDetailsFromServer("army.monks.grapes").toString());
+        //ArrayList<Order> orders = Database.readOrders(input_str);
+        //Order.sortByValue(orders);
     }
 }

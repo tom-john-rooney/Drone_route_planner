@@ -1,6 +1,5 @@
 package uk.ac.ed.inf;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,11 +11,11 @@ import java.util.HashMap;
  */
 public class Menus {
     /** The URL 'suffix' specifying the location of the menus content on the web server. */
-    public static final String MENUS_URL = "/menus/menus.json";
+    private static final String MENUS_URL = "/menus/menus.json";
     /** The standard delivery fee charged to users for every delivery made by the drone. */
-    public static final int STANDARD_DELIVERY_PENCE = 50;
+    private static final int STANDARD_DELIVERY_PENCE = 50;
     /** A HashMap storing merging all the menus of each shop in the system into one. */
-    private HashMap<String, Integer> combinedMenusMap = new HashMap<>();
+    private HashMap<String, Integer> menusMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
     public final String machine;
@@ -49,8 +48,8 @@ public class Menus {
     public int getDeliveryCost(String... orderItems){
         int deliveryCost = 0;
         for(String orderItem : orderItems){
-            if(combinedMenusMap.get(orderItem) != null){
-                deliveryCost += combinedMenusMap.get(orderItem);
+            if(menusMap.get(orderItem) != null){
+                deliveryCost += menusMap.get(orderItem);
             }
         }
 
@@ -65,7 +64,7 @@ public class Menus {
     public ArrayList<Shop> getShopsWithMenus(){
         String url = WebServer.buildURL(this.machine, this.port, MENUS_URL);
         // Contents of json file from web parsed to an ArrayList of shop objects
-        ArrayList<Shop> shopsWithMenus = (ArrayList<Shop>) JsonParsing.parseJsonList(WebServer.getFrom(url));
+        ArrayList<Shop> shopsWithMenus = JsonParsing.parseShops(WebServer.getFrom(url));
         return shopsWithMenus;
     }
 
@@ -79,7 +78,7 @@ public class Menus {
         ArrayList<Shop> shops = this.getShopsWithMenus();
         for(Shop s : shops){
             HashMap<String,Integer> sMenuMap = s.hashMenu();
-            combinedMenusMap.putAll(sMenuMap);
+            menusMap.putAll(sMenuMap);
         }
     }
 
