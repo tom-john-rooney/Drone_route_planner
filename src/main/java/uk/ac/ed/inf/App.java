@@ -18,7 +18,23 @@ public class App
         Words w3w = new Words("localhost","9898");
 
 
-        //ArrayList<Order> orders = Database.readOrders(input_str);
-        //Order.sortByValue(orders);
+        ArrayList<Order> orders = Database.readOrders(input_str);
+        ArrayList<Shop> shops = menus.getShopsWithMenus();
+
+        for(Order o: orders){
+            w3w.getDetailsFromServer(o.deliveryLoc);
+            System.out.println(o.deliveryLoc);
+        }
+
+        System.out.println("\norders done");
+        for(Shop s: shops){
+            w3w.getDetailsFromServer(s.location);
+            System.out.println(s.location);
+        }
+
+        w3w.getWordsMapSize();
+
+
+
     }
 }

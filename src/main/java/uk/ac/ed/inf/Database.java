@@ -16,6 +16,8 @@ public class Database {
     private static final String readOrderContentsQueryStr = "select * from orderDetails where orderNo =(?)";
     /** Address at which the database is hosted */
     private static final String jdbcString = "jdbc:derby://localhost:1527/derbyDB";
+    /** Menus instance to enable calculations of order costs */
+    private static final Menus m = new Menus("localhost","9898");
 
     /**
      * Default constructor to prevent instantiation
@@ -100,7 +102,6 @@ public class Database {
      */
     public static ArrayList<Order> readOrders(String date) {
         try {
-            Menus m = new Menus("localhost","9898");
             PreparedStatement psReadOrdersQuery = buildReadOrdersQuery(date);
             ArrayList<Order> orderList = new ArrayList<>();
             ResultSet rs = psReadOrdersQuery.executeQuery();
