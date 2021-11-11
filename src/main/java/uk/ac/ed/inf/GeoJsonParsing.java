@@ -53,6 +53,10 @@ public class GeoJsonParsing {
             if(f.properties().has(LOCATION_PROPERTY)){
                 w3wAddressLst.add(f.getStringProperty(LOCATION_PROPERTY));
             }
+            else{
+                System.err.println("Fatal error in GeoJsonParsing.parsePointsToW3w: Feature did not contain a property named " + LOCATION_PROPERTY);
+                System.exit(1);
+            }
         }
         return w3wAddressLst;
     }
