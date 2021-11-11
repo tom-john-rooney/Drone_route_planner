@@ -32,7 +32,17 @@ public class App
             System.out.println(s.location);
         }
 
-        w3w.getWordsMapSize();
+        System.out.println("\nShops done");
+
+        String url = WebServer.buildURL("localhost","9898","/buildings/landmarks.geojson");
+        String geoStr = WebServer.getFrom(url);
+
+        ArrayList<String> landmarksW3W = GeoJsonParsing.parsePointsToW3w(geoStr);
+
+        for(String landmarkStr: landmarksW3W){
+            w3w.getDetailsFromServer(landmarkStr);
+            System.out.println(landmarkStr);
+        }
 
 
 

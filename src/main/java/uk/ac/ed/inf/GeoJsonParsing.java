@@ -1,5 +1,7 @@
 package uk.ac.ed.inf;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mapbox.geojson.*;
 import java.util.ArrayList;
 
@@ -8,6 +10,8 @@ import java.util.ArrayList;
  * GeoJSON library.
  */
 public class GeoJsonParsing {
+
+    private final static String LOCATION_PROPERTY = "location";
 
     /** Default constructor to prevent instantiation */
     private GeoJsonParsing(){}
@@ -36,23 +40,20 @@ public class GeoJsonParsing {
 
     /**
      * Takes an input GeoJSON string whose FeatureCollection should only contain Features whose
-     * Geometry type is Point. This string is parsed to an ArrayList of Point objects.
+     * properties include a field called 'location'. This string is parsed to an ArrayList of
+     * what3words address strings.
      *
      * @param geoJsonPointStr the string to be parsed
-     * @return an ArrayList of Point objects
+     * @return an ArrayList of what3words address strings
      */
-    public static ArrayList<Point> parsePoints(String geoJsonPointStr){
+    public static ArrayList<String> parsePointsToW3w(String geoJsonPointStr){
         FeatureCollection fc = FeatureCollection.fromJson(geoJsonPointStr);
-        ArrayList<Point> pointLst = new ArrayList<>();
+        ArrayList<String> w3wAddressLst = new ArrayList<>();
         for(Feature f : fc.features()){
-            Geometry g = f.geometry();
-            if(g instanceof Point){
-                pointLst.add((Point)g);
-            }else{
-                System.err.println("Fatal error in parsePoints: File contained a non-point Feature.");
-                System.exit(1);
+            if(f.properties().has(LOCATION_PROPERTY)){
+                w3wAddressLst.add(f.getStringProperty(LOCATION_PROPERTY));
             }
         }
-        return pointLst;
+        return w3wAddressLst;
     }
 }
