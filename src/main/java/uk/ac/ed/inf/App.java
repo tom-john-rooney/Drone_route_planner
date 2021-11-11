@@ -1,5 +1,9 @@
 package uk.ac.ed.inf;
 
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Polygon;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -33,18 +37,6 @@ public class App
         }
 
         System.out.println("\nShops done");
-
-        String url = WebServer.buildURL("localhost","9898","/buildings/landmarks.geojson");
-        String geoStr = WebServer.getFrom(url);
-
-        ArrayList<String> landmarksW3W = GeoJsonParsing.parsePointsToW3w(geoStr);
-
-        for(String landmarkStr: landmarksW3W){
-            w3w.getDetailsFromServer(landmarkStr);
-            System.out.println(landmarkStr);
-        }
-
-
 
     }
 }

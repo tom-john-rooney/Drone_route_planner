@@ -46,6 +46,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.mapbox.mapboxsdk</groupId>
+      <artifactId>mapbox-sdk-turf</artifactId>
+      <version>5.8.0</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbyclient</artifactId>
       <version>10.15.2.0</version>

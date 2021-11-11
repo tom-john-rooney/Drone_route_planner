@@ -1,7 +1,5 @@
 package uk.ac.ed.inf;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mapbox.geojson.*;
 import java.util.ArrayList;
 
@@ -18,24 +16,25 @@ public class GeoJsonParsing {
 
     /**
      * Takes an input GeoJSON string whose FeatureCollection should only contain Features whose
-     * Geometry type is Polygon. This string is parsed to an ArrayList of Polygon objects.
+     * Geometry type is Polygon. This string is parsed to an ArrayList of NoFlyZone objects.
      *
-     * @param geoJsonPolygonStr the string to be parsed
-     * @return an ArrayList of Polygon objects
+     * @param geoJsonNoFlyStr the string to be parsed
+     * @return an ArrayList of NoFlyZone objects
      */
-    public static ArrayList<Polygon> parsePolygons(String geoJsonPolygonStr){
-        FeatureCollection fc = FeatureCollection.fromJson(geoJsonPolygonStr);
-        ArrayList<Polygon> polygonLst = new ArrayList<>();
+    public static ArrayList<NoFlyZone> parseNoFlyZones(String geoJsonNoFlyStr){
+        FeatureCollection fc = FeatureCollection.fromJson(geoJsonNoFlyStr);
+        ArrayList<NoFlyZone> noFlyLst = new ArrayList<>();
         for(Feature f : fc.features()){
             Geometry g = f.geometry();
             if(g instanceof Polygon){
-                polygonLst.add((Polygon)g);
+                Polygon p = (Polygon) g;
+                noFlyLst.add(new NoFlyZone(p));
             }else{
                 System.err.println("Fatal error in parsePolygons: File contained a non-polygon Feature.");
                 System.exit(1);
             }
         }
-        return polygonLst;
+        return noFlyLst;
     }
 
     /**
