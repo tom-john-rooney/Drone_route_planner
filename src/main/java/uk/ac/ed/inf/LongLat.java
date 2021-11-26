@@ -130,4 +130,16 @@ public class LongLat {
             System.exit(1);
         }
     }
+
+    public int getBearingTo(LongLat point){
+        double theta = Math.atan2(point.lat - this.lat, point.lng - this.lng);
+        float angle = (float) Math.toDegrees(theta);
+        angle = Math.round(angle/ANGLE_SCALE) * ANGLE_SCALE;
+        if(angle < 0) {
+            angle += 360;
+        }else if(angle == 360){
+            angle = 0;
+        }
+        return (int) angle;
+    }
 }

@@ -1,6 +1,7 @@
 package uk.ac.ed.inf;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,6 +84,14 @@ public class Words {
         if (!(matcher.find())) {
             System.err.println("Fatal error in Words.checkIsWhatThreeWordsAddress: Address supplied is not of what3words format.");
             System.exit(1);
+        }
+    }
+
+    public void buildGraphFromWords(){
+        for (HashMap.Entry<String, What3WordsLoc> from : this.wordsMap.entrySet()) {
+            for(HashMap.Entry<String, What3WordsLoc> to : this.wordsMap.entrySet()){
+
+            }
         }
     }
 }

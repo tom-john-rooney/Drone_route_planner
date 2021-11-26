@@ -16,25 +16,25 @@ public class GeoJsonParsing {
 
     /**
      * Takes an input GeoJSON string whose FeatureCollection should only contain Features whose
-     * Geometry type is Polygon. This string is parsed to an ArrayList of NoFlyZone objects.
+     * Geometry type is Polygon. This string is parsed to an ArrayList of Polygon objects.
      *
      * @param geoJsonNoFlyStr the string to be parsed
-     * @return an ArrayList of NoFlyZone objects
+     * @return an ArrayList of Polygon objects
      */
-    public static ArrayList<NoFlyZone> parseNoFlyZones(String geoJsonNoFlyStr){
+    public static ArrayList<Polygon> parseNoFlyZones(String geoJsonNoFlyStr){
         FeatureCollection fc = FeatureCollection.fromJson(geoJsonNoFlyStr);
-        ArrayList<NoFlyZone> noFlyLst = new ArrayList<>();
+        ArrayList<Polygon> zoneLst = new ArrayList<>();
         for(Feature f : fc.features()){
             Geometry g = f.geometry();
             if(g instanceof Polygon){
                 Polygon p = (Polygon) g;
-                noFlyLst.add(new NoFlyZone(p));
+                zoneLst.add(p);
             }else{
                 System.err.println("Fatal error in parsePolygons: File contained a non-polygon Feature.");
                 System.exit(1);
             }
         }
-        return noFlyLst;
+        return zoneLst;
     }
 
     /**

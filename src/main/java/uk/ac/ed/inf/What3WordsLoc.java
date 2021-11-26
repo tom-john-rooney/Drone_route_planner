@@ -1,5 +1,7 @@
 package uk.ac.ed.inf;
 
+import java.util.ArrayList;
+
 /**
  * Represents a What3Words address.
  *
@@ -89,7 +91,7 @@ public class What3WordsLoc {
          * @param point the point to which the Pythagorean distance is calculated
          * @return the Pythagorean distance between the calling instance and point in degrees
          */
-        public double distanceTo(uk.ac.ed.inf.LongLat point){
+        public double distanceTo(What3WordsLoc.LongLat point){
             isPointNull(point);
             return Math.hypot(this.lng - point.lng, this.lat - point.lat);
         }
@@ -102,7 +104,7 @@ public class What3WordsLoc {
          * @param point the point which may or may not be 'close to' the calling instance
          * @return true if the instance calling the method is 'close to' point, false otherwise
          */
-        public boolean closeTo(uk.ac.ed.inf.LongLat point){
+        public boolean closeTo(What3WordsLoc.LongLat point){
             isPointNull(point);
             return this.distanceTo(point) < DISTANCE_TOLERANCE;
         }
@@ -142,10 +144,39 @@ public class What3WordsLoc {
          *
          * @param point the point being checked for null status
          */
-        private void isPointNull(uk.ac.ed.inf.LongLat point){
+        private void isPointNull(What3WordsLoc.LongLat point){
             if(point == null){
                 System.err.println("Fatal error: null coordinate");
                 System.exit(1);
+            }
+        }
+
+        public int getBearingTo(What3WordsLoc.LongLat point){
+            double theta = Math.atan2(point.lat - this.lat, point.lng - this.lng);
+            float angle = (float) Math.toDegrees(theta);
+            angle = Math.round(angle/ANGLE_SCALE) * ANGLE_SCALE;
+            if(angle < 0) {
+                angle += 360;
+            }else if(angle == 360){
+                angle = 0;
+            }
+            return (int) angle;
+        }
+
+        public ArrayList<Integer> getPathTo(What3WordsLoc.LongLat point, NoFlyZones zones){
+            isPointNull(point);
+            if(!(point.isConfined())){
+                System.err.println("Fatal error in What3WordsLoc.LongLat.getPathTo: point provided" +
+                        "\nlies outside confinement zone.");
+                System.exit(1);
+                return null;
+            }
+
+            What3WordsLoc.LongLat currPos = new What3WordsLoc.LongLat(this.lng, this.lat);
+            ArrayList<Integer> bearings = new ArrayList<>();
+            while(!(currPos.closeTo(point))){
+                int bearing = currPos.getBearingTo(point);
+                currPos.nextPosition(bearing);
             }
         }
     }
