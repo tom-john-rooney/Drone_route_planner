@@ -1,5 +1,6 @@
 package uk.ac.ed.inf;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -120,17 +121,19 @@ public class What3WordsLoc {
          *         after the move, this object is null if the angle is not a multiple of ANGLE_SCALE
          *         or lies outside the range [MIN_ANGLE,MAX_ANGLE]
          */
-        public uk.ac.ed.inf.LongLat nextPosition(int angle){
+        public What3WordsLoc.LongLat nextPosition(int angle){
             if(angle == JUNK_ANGLE){
-                return new uk.ac.ed.inf.LongLat(this.lng, this.lat);
+                return new What3WordsLoc.LongLat(this.lng, this.lat);
             }
             else if(!(angle % ANGLE_SCALE == 0) || angle > MAX_ANGLE || angle < MIN_ANGLE){
+                System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.nextPosition: angle %d is invalid.",angle));
+                System.exit(1);
                 return null;
             }
             else{
                 double newlng = this.lng + MOVE_DISTANCE * Math.cos(Math.toRadians(angle));
                 double newlat = this.lat + MOVE_DISTANCE * Math.sin(Math.toRadians(angle));
-                return new uk.ac.ed.inf.LongLat(newlng, newlat);
+                return new What3WordsLoc.LongLat(newlng, newlat);
             }
         }
 
@@ -146,7 +149,7 @@ public class What3WordsLoc {
          */
         private void isPointNull(What3WordsLoc.LongLat point){
             if(point == null){
-                System.err.println("Fatal error: null coordinate");
+                System.err.println("Fatal error: null coordinate.");
                 System.exit(1);
             }
         }
@@ -163,21 +166,34 @@ public class What3WordsLoc {
             return (int) angle;
         }
 
-        public ArrayList<Integer> getPathTo(What3WordsLoc.LongLat point, NoFlyZones zones){
+        public ArrayList<What3WordsLoc.LongLat> getPathTo(What3WordsLoc.LongLat point, NoFlyZones zones){
             isPointNull(point);
-            if(!(point.isConfined())){
-                System.err.println("Fatal error in What3WordsLoc.LongLat.getPathTo: point provided" +
-                        "\nlies outside confinement zone.");
+            if(!(point.isConfined()) || zones.pointInZones(this)){
+                System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.getPathTo: destination point provided" +
+                        "\nlies outside confinement zone or inside no-fly-zones."+
+                        "\nLongitude %d\nLatitude %d",point.lng, point.lat));
                 System.exit(1);
                 return null;
             }
-
-            What3WordsLoc.LongLat currPos = new What3WordsLoc.LongLat(this.lng, this.lat);
-            ArrayList<Integer> bearings = new ArrayList<>();
+            ArrayList<What3WordsLoc.LongLat> pointsOnPath = new ArrayList<>();
+            What3WordsLoc.LongLat currPos = new What3WordsLoc.LongLat(this.lng, this.lat);;
+            System.out.println("Initial pos:\n" + currPos.toString());
+            pointsOnPath.add(currPos);
             while(!(currPos.closeTo(point))){
                 int bearing = currPos.getBearingTo(point);
-                currPos.nextPosition(bearing);
+                What3WordsLoc.LongLat nextPos = currPos.nextPosition(bearing);
+                boolean confined = nextPos.isConfined();
+                boolean inZones = zones.pointInZones(nextPos);
+                if(confined && !(inZones)){
+                    System.out.println("Next pos:\n" + nextPos.toString());
+                    pointsOnPath.add(nextPos);
+                    currPos = nextPos;
+                }else{
+                    System.out.println("bruh");
+                    return new ArrayList<>();
+                }
             }
+            return pointsOnPath;
         }
     }
 }

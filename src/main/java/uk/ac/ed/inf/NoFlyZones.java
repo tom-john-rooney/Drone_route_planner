@@ -14,7 +14,7 @@ public class NoFlyZones {
     private final String ZONES_DIR = "/buildings/no-fly-zones.geojson";
 
     /** One geojson.Polygon object to represent each no-fly-zone */
-    private ArrayList<Polygon> zones;
+    private ArrayList<Polygon> zones = new ArrayList<>();
     /** The machine on which the web server is hosted */
     public final String machine;
     /** The on the web server to which a connection needs to be made */
@@ -43,14 +43,14 @@ public class NoFlyZones {
     }
 
     /**
-     * Checks if a What3WordsLoc object lies in any of the no-fly-zones.
+     * Checks if a What3Words.LongLat object lies in any of the no-fly-zones.
      *
-     * @param loc the location to be checked
+     * @param point the point to be checked
      * @return true if loc lies in any of the no-fly-zones stored, false otherwise
      */
-    public boolean pointInZones(What3WordsLoc loc){
+    public boolean pointInZones(What3WordsLoc.LongLat point){
         for(Polygon zone : this.zones){
-            if(pointInPolygon(loc, zone)){
+            if(pointInPolygon(point, zone)){
                 return true;
             }
         }
@@ -58,13 +58,13 @@ public class NoFlyZones {
     }
 
     /**
-     * Checks if a What3Words object lies in a particular no-fly-zone
-     * @param loc the location to be checked
+     * Checks if a What3Words.LongLat point lies in a particular no-fly-zone
+     * @param point the point to be checked
      * @param zone the no-fly-zone in which loc may or may not lie
      * @return true if loc is inside zone, false otherwise
      */
-    private static boolean pointInPolygon(What3WordsLoc loc, Polygon zone){
-        Point p = Point.fromLngLat(loc.coordinates.lng, loc.coordinates.lat);
+    private static boolean pointInPolygon(What3WordsLoc.LongLat point, Polygon zone){
+        Point p = Point.fromLngLat(point.lng, point.lat);
         return TurfJoins.inside(p, zone);
     }
 }

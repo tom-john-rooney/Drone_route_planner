@@ -1,5 +1,6 @@
 package uk.ac.ed.inf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -20,7 +21,8 @@ public class Words {
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।]" +
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     /** A HashMap which maps every what3words address on the web server to a What3WordsLoc object */
-    private HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
+    public HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
+    public HashMap<String, ArrayList<What3WordsLoc.LongLat>> edgeMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
     public final String machine;
@@ -87,10 +89,16 @@ public class Words {
         }
     }
 
-    public void buildGraphFromWords(){
+    public void buildGraphFromWords(NoFlyZones zones){
         for (HashMap.Entry<String, What3WordsLoc> from : this.wordsMap.entrySet()) {
             for(HashMap.Entry<String, What3WordsLoc> to : this.wordsMap.entrySet()){
-
+                What3WordsLoc.LongLat fromPoint = from.getValue().coordinates;
+                What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
+                ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
+                if(!(edge.isEmpty())){
+                    String key = from.getKey() + to.getKey();
+                    edgeMap.put(key, edge);
+                }
             }
         }
     }
