@@ -25,6 +25,15 @@ public class Words {
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     /** A HashMap which maps every what3words address on the web server to a What3WordsLoc object */
     private HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
+    /**
+     * A HashMap to represent edges of a graph of the what3words addresses in wordsMap.
+     *
+     * Each key consists of 2 keys from the wordsMap joint by a ".", with the first address
+     * being the start point of the edge and the second being the end. The value at each key is
+     * an ArrayList of What3WordsLoc.LongLat objects, representing a legal path between the 2
+     * addresses making up the joint key. A key (and so, an entry) only exists in this HashMap
+     * where a legal, straight path between the 2 addresses making up the joint key exists.
+     */
     public HashMap<String, ArrayList<What3WordsLoc.LongLat>> edgeMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
@@ -92,12 +101,23 @@ public class Words {
         }
     }
 
+    /**
+     * Populates the edgeMap with the paths between What3WordsLoc instances.
+     *
+     * Iterates over every pair of entries in the wordsMap and checks if a legal, straight
+     * path between them exists. If it does, an entry is added to the edgeMap with key = start_address
+     * + "." + end_address and value = an ArrayList of What3WordsLoc.LongLat instances, representing
+     * points to which moves are made along the path.
+     *
+     * @param zones a NoFlyZones object whose zones field contains all the no-fly-zones stored on the web server.
+     */
     public void buildGraphFromWords(NoFlyZones zones){
         for (HashMap.Entry<String, What3WordsLoc> from : this.wordsMap.entrySet()) {
             for(HashMap.Entry<String, What3WordsLoc> to : this.wordsMap.entrySet()){
                 What3WordsLoc.LongLat fromPoint = from.getValue().coordinates;
                 What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
                 ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
+                // a legal path between the 2 locations exists.
                 if(!(edge.isEmpty())){
                     String key = from.getKey() + "." + to.getKey();
                     edgeMap.put(key, edge);
@@ -106,6 +126,9 @@ public class Words {
         }
     }
 
+    // Probably going to delete before submission so doesn't need full documentation.
+
+    //This method just prints the contents of the graph edge map.
     public void edgeMapToStr(){
         for(Map.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry: edgeMap.entrySet()){
             System.out.println("Key:\n"+ entry.getKey() +"\nCoords:\n");
@@ -116,6 +139,10 @@ public class Words {
         }
     }
 
+    // Probably going to delete before submission so doesn't need full documentation.
+
+    // This method converts the edge map to a GeoJson file for testing.
+    // A similar idea will be needed for the final drone path map so don't delete too hastily!
     public void edgesToGeoJson() {
         ArrayList<Feature> fs = new ArrayList<>();
         for(HashMap.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry : this.edgeMap.entrySet()){

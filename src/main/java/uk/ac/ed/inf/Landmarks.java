@@ -26,6 +26,12 @@ public class Landmarks {
         this.port = port;
     }
 
+    /**
+     * Fetches the details of the landmarks from the web server and returns an ArrayList
+     * of their w3w addresses.
+     *
+     * @return an ArrayList of w3wAddresses, one for each landmark on the web server.
+     */
     public ArrayList<String> getLandmarksAddresses(){
         String url = WebServer.buildURL(this.machine, this.port, this.LANDMARKS_DIR);
         String landmarksStr = WebServer.getFrom(url);

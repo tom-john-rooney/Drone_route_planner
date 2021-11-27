@@ -154,6 +154,13 @@ public class What3WordsLoc {
             }
         }
 
+        /**
+         * Gets the bearing to a point, with the bearing returned being a multiple of ANGLE_SCALE and in the range
+         * [MIN_ANGLE, MAX_ANGLE].
+         *
+         * @param point the point to which the bearing is to be calculated
+         * @return the bearing to point
+         */
         public int getBearingTo(What3WordsLoc.LongLat point){
             double theta = Math.atan2(point.lat - this.lat, point.lng - this.lng);
             float angle = (float) Math.toDegrees(theta);
@@ -166,30 +173,44 @@ public class What3WordsLoc {
             return (int) angle;
         }
 
+        /**
+         * Gets the path to a specified point as an ArrayList of What3WordsLoc.LongLat objects, with
+         * each object representing a point to which a move is to be made as the path is traversed from
+         * the calling instance to point.
+         *
+         * @param point the point to which the path is to be calculated
+         * @param zones a NoFlyZones object whose zones field contains details of all no-fly-zones
+         *              stored on the web server
+         * @return an ArrayList of What3Words.LongLat instances representing the points along the path between
+         *         the calling instance and point, if a legal, straight path between them exists. Otherwise, an#
+         *         empty ArrayList is returned.
+         */
         public ArrayList<What3WordsLoc.LongLat> getPathTo(What3WordsLoc.LongLat point, NoFlyZones zones){
             isPointNull(point);
-            if(!(point.isConfined()) || zones.pointInZones(this)){
-                System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.getPathTo: destination point provided" +
-                        "\nlies outside confinement zone or inside no-fly-zones."+
-                        "\nLongitude %d\nLatitude %d",point.lng, point.lat));
+            // Checks on both to and from points; both most be confined and outside nfz's.
+            if(!(point.isConfined()) || !(this.isConfined()) || zones.pointInZones(this) || zones.pointInZones(point)){
+                System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.getPathTo.\n\nStart point:"+
+                        "\nLongitude %d\nLatitude %d"+
+                        "\n\nEnd point:\nLongitude: %d\nLatitude: %d"+
+                        "\n\nCheck that both points are in confinement area and outside of no-fly-zones.",this.lng, this.lat,point.lng, point.lat));
                 System.exit(1);
                 return null;
             }
             ArrayList<What3WordsLoc.LongLat> pointsOnPath = new ArrayList<>();
             What3WordsLoc.LongLat currPos = new What3WordsLoc.LongLat(this.lng, this.lat);;
-            System.out.println("Initial pos:\n" + currPos.toString());
             pointsOnPath.add(currPos);
             while(!(currPos.closeTo(point))){
                 int bearing = currPos.getBearingTo(point);
                 What3WordsLoc.LongLat nextPos = currPos.nextPosition(bearing);
                 boolean confined = nextPos.isConfined();
                 boolean inZones = zones.pointInZones(nextPos);
-                if(confined && !(inZones)){
-                    System.out.println("Next pos:\n" + nextPos.toString());
+                boolean intersectsZones = zones.lineIntersectsZones(currPos, nextPos);
+                if(confined && !(inZones) && !(intersectsZones)){
                     pointsOnPath.add(nextPos);
                     currPos = nextPos;
-                }else{
-                    System.out.println("bruh");
+                }
+                // No legal, straight path exists between the points.
+                else{
                     return new ArrayList<>();
                 }
             }
