@@ -4,6 +4,8 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Polygon;
 
+import javax.print.attribute.SetOfIntegerSyntax;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,10 +23,12 @@ public class App
         Menus menus = new Menus("localhost", "9898");
         Words w3w = new Words("localhost","9898");
         NoFlyZones zones = new NoFlyZones("localhost", "9898");
+        Landmarks landmarks = new Landmarks("localhost", "9898");
 
         ArrayList<Order> orders = Database.readOrders(input_str);
         ArrayList<Shop> shops = menus.getShopsWithMenus();
-        zones.getZones();
+        ArrayList<String> landmarkAddresses = landmarks.getLandmarksAddresses();
+
 
         for(Order o: orders){
             w3w.getDetailsFromServer(o.deliveryLoc);
@@ -38,10 +42,17 @@ public class App
         }
         System.out.println("shops done\n");
 
-        System.out.println(w3w.edgeMap.size());
+        for(String lstr: landmarkAddresses){
+            w3w.getDetailsFromServer(lstr);
+            System.out.println(lstr);
+        }
+        System.out.println("landmarks done\n");
+
+        zones.getZones();
         w3w.buildGraphFromWords(zones);
-        System.out.println(w3w.edgeMap.size());
-        System.out.println(w3w.wordsMap.size());
+        w3w.edgeMapToStr();
+        w3w.edgesToGeoJson();
+
 
 
     }

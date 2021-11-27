@@ -1,5 +1,8 @@
 package uk.ac.ed.inf;
 
+import com.mapbox.geojson.*;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +24,7 @@ public class Words {
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।]" +
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     /** A HashMap which maps every what3words address on the web server to a What3WordsLoc object */
-    public HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
+    private HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
     public HashMap<String, ArrayList<What3WordsLoc.LongLat>> edgeMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
@@ -96,10 +99,44 @@ public class Words {
                 What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
                 ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
                 if(!(edge.isEmpty())){
-                    String key = from.getKey() + to.getKey();
+                    String key = from.getKey() + "." + to.getKey();
                     edgeMap.put(key, edge);
                 }
             }
+        }
+    }
+
+    public void edgeMapToStr(){
+        for(Map.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry: edgeMap.entrySet()){
+            System.out.println("Key:\n"+ entry.getKey() +"\nCoords:\n");
+            for(What3WordsLoc.LongLat point : entry.getValue()){
+                System.out.println(point.toString());
+            }
+            System.out.println("\n");
+        }
+    }
+
+    public void edgesToGeoJson() {
+        ArrayList<Feature> fs = new ArrayList<>();
+        for(HashMap.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry : this.edgeMap.entrySet()){
+            ArrayList<Point> points = new ArrayList<>();
+            for(What3WordsLoc.LongLat pointAsLongLat : entry.getValue()){
+                Point pointAsPoint = Point.fromLngLat(pointAsLongLat.lng, pointAsLongLat.lat);
+                points.add(pointAsPoint);
+            }
+            LineString line = LineString.fromLngLats(points);
+            Geometry g = (Geometry) line;
+            Feature f = Feature.fromGeometry(g);
+            fs.add(f);
+        }
+        FeatureCollection fc = FeatureCollection.fromFeatures(fs);
+        String geoJsonStr = fc.toJson();
+        try {
+            FileWriter fileWriter = new FileWriter("graph.json");
+            fileWriter.write(geoJsonStr);
+            fileWriter.close();
+        }catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
