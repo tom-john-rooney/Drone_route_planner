@@ -36,12 +36,20 @@ public class Shop {
      *
      * @return the HashMap version of the menu
      */
-    public HashMap<String, Integer> hashMenu(){
-        HashMap<String,Integer> hashMenu = new HashMap<>();
+    public HashMap<String, Integer> getPriceMap(){
+        HashMap<String,Integer> priceMap = new HashMap<>();
         for(Item i: this.menu){
-            hashMenu.put(i.item, Integer.valueOf(i.pence));
+            priceMap.put(i.item, Integer.valueOf(i.pence));
         }
-        return hashMenu;
+        return priceMap;
+    }
+
+    public HashMap<String, String> getLocMap(){
+        HashMap<String, String> locMap = new HashMap<>();
+        for(Item i: this.menu){
+            locMap.put(i.item, this.location);
+        }
+        return locMap;
     }
 
     /**

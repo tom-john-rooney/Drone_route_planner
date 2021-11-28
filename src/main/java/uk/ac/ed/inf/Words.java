@@ -43,6 +43,11 @@ public class Words {
         this.port = port;
     }
 
+    public Words(){
+        this.machine = WebServer.UNSPECIFIED_MACHINE;
+        this.port = WebServer.UNSPECIFIED_PORT;
+    }
+
     /**
      * Gets the details of a what3words address from the web server.
      *

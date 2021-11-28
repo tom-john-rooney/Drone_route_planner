@@ -1,7 +1,10 @@
 package uk.ac.ed.inf;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents the items for sale in participating shops
@@ -14,8 +17,10 @@ public class Menus {
     private static final String MENUS_URL = "/menus/menus.json";
     /** The standard delivery fee charged to users for every delivery made by the drone. */
     private static final int STANDARD_DELIVERY_PENCE = 50;
-    /** A HashMap storing merging all the menus of each shop in the system into one. */
-    private HashMap<String, Integer> menusMap = new HashMap<>();
+    /** A HashMap merging all the menus of each shop in the system into one, with the key being an item name and the value, its price. */
+    private HashMap<String, Integer> priceMap = new HashMap<>();
+    /** A HashMap mapping each item to its corresponding shop location*/
+    private HashMap<String, String> locMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
     public final String machine;
@@ -48,8 +53,8 @@ public class Menus {
     public int getDeliveryCost(String... orderItems){
         int deliveryCost = 0;
         for(String orderItem : orderItems){
-            if(menusMap.get(orderItem) != null){
-                deliveryCost += menusMap.get(orderItem);
+            if(priceMap.get(orderItem) != null){
+                deliveryCost += priceMap.get(orderItem);
             }
         }
 
@@ -77,9 +82,21 @@ public class Menus {
     private void getMenus(){
         ArrayList<Shop> shops = this.getShopsWithMenus();
         for(Shop s : shops){
-            HashMap<String,Integer> sMenuMap = s.hashMenu();
-            menusMap.putAll(sMenuMap);
+            HashMap<String, Integer> sPriceMap = s.getPriceMap();
+            HashMap<String, String> sLocMap = s.getLocMap();
+            priceMap.putAll(sPriceMap);
+            locMap.putAll(sLocMap);
         }
+    }
+
+    public ArrayList<String> getShopLocns(ArrayList<String> orderItems) {
+        Set<String> orderShops = new HashSet<>();
+        for (String item : orderItems) {
+            if (locMap.get(item) != null) {
+                orderShops.add(locMap.get(item));
+            }
+        }
+        return new ArrayList<>(orderShops);
     }
 
 

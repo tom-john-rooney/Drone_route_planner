@@ -47,6 +47,8 @@ public class What3WordsLoc {
         public static final int JUNK_ANGLE = -999;
         /** The length of any move the drone makes in degrees */
         public static final double MOVE_DISTANCE = 0.00015;
+        /** The location of Appleton Tower */
+        public static final What3WordsLoc.LongLat AT_LOC = new What3WordsLoc.LongLat(-3.186874, 55.944494);
 
         /** The longitude component of the coordinate */
         public final double lng;

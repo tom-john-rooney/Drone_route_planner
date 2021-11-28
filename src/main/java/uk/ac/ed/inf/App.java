@@ -1,13 +1,9 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.Polygon;
-
-import javax.print.attribute.SetOfIntegerSyntax;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Hello world!
@@ -25,8 +21,10 @@ public class App
         NoFlyZones zones = new NoFlyZones("localhost", "9898");
         Landmarks landmarks = new Landmarks("localhost", "9898");
         LocationGraph lg = new LocationGraph();
+        Drone d = new Drone(What3WordsLoc.LongLat.AT_LOC);
 
         ArrayList<Order> orders = Database.readOrders(input_str);
+        Order.sortByValue(orders);
         ArrayList<Shop> shops = menus.getShopsWithMenus();
         ArrayList<String> landmarkAddresses = landmarks.getLandmarksAddresses();
 
@@ -52,6 +50,12 @@ public class App
         zones.getZones();
         w3w.buildGraphFromWords(zones);
         lg.buildGraph(w3w);
+
+        ArrayList<Order> testOrders = (ArrayList<Order>) Arrays.asList(orders.get(0), orders.get(1), orders.get(2));
+
+        for(Order order: testOrders){
+            ArrayList<String> orderShopLocns = menus.getShopLocns(order.contents);
+        }
 
 
 
