@@ -41,17 +41,17 @@ public class LocationGraph {
         switch(pickUpLocs.size()){
             case 1:{
                 String shopLoc = pickUpLocs.get(0);
-                ArrayList<String> locsToVisit = (ArrayList<String>) Arrays.asList(startLoc, shopLoc, delivLoc);
+                ArrayList<String> locsToVisit = new ArrayList<>(Arrays.asList(startLoc, shopLoc, delivLoc));
                 return getGraphPath(locsToVisit);
             }
             case 2:{
                 String shopOneLoc = pickUpLocs.get(0);
                 String shopTwoLoc = pickUpLocs.get(1);
 
-                ArrayList<String> locsToVisit = (ArrayList<String>) Arrays.asList(startLoc, shopOneLoc, shopTwoLoc, delivLoc);
+                ArrayList<String> locsToVisit = new ArrayList<>(Arrays.asList(startLoc, shopOneLoc, shopTwoLoc, delivLoc));
                 List<List<String>> pathOne = getGraphPath(locsToVisit);
 
-                locsToVisit = (ArrayList<String>) Arrays.asList(startLoc, shopTwoLoc, shopOneLoc, delivLoc);
+                locsToVisit = new ArrayList<>(Arrays.asList(startLoc, shopTwoLoc, shopOneLoc, delivLoc));
                 List<List<String>> pathTwo = getGraphPath(locsToVisit);
 
                 if(getPathWeight(pathOne) > getPathWeight(pathTwo)){
@@ -98,6 +98,7 @@ public class LocationGraph {
     }
 
     private List<String> getShortestPath(String start, String end){
+        System.out.println(start + " " + end);
          return DijkstraShortestPath.findPathBetween(g, start, end).getVertexList();
     }
 

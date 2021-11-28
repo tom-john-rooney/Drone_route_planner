@@ -1,7 +1,7 @@
 package uk.ac.ed.inf;
 
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -28,6 +28,7 @@ public class App
         ArrayList<Shop> shops = menus.getShopsWithMenus();
         ArrayList<String> landmarkAddresses = landmarks.getLandmarksAddresses();
 
+        w3w.getDetailsFromServer(Drone.AT_W3W_ADDR);
 
         for(Order o: orders){
             w3w.getDetailsFromServer(o.deliveryLoc);
@@ -51,7 +52,13 @@ public class App
         w3w.buildGraphFromWords(zones);
         lg.buildGraph(w3w);
 
-        //lg.getW3wPathFromGraph("nests.takes.print")
+        String startLoc = "nests.takes.print";
+        ArrayList<String> locs = new ArrayList<>();
+        locs.add("sketch.spill.puzzle");
+        locs.add("milky.hers.focus");
+        String endLoc = "linked.pads.cigar";
+
+        lg.getW3wPathFromGraph(startLoc, locs, endLoc);
 
 
 
