@@ -109,14 +109,16 @@ public class Words {
      */
     public void buildGraphFromWords(NoFlyZones zones){
         for (HashMap.Entry<String, What3WordsLoc> from : this.wordsMap.entrySet()) {
-            for(HashMap.Entry<String, What3WordsLoc> to : this.wordsMap.entrySet()){
-                What3WordsLoc.LongLat fromPoint = from.getValue().coordinates;
-                What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
-                ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
-                // a legal path between the 2 locations exists.
-                if(!(edge.isEmpty())){
-                    String key = from.getKey() + "." + to.getKey();
-                    edgeMap.put(key, Integer.valueOf(edge.size()));
+            for(HashMap.Entry<String, What3WordsLoc> to : this.wordsMap.entrySet()) {
+                if (!from.equals(to)) {
+                    What3WordsLoc.LongLat fromPoint = from.getValue().coordinates;
+                    What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
+                    ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
+                    // a legal path between the 2 locations exists.
+                    if (!(edge.isEmpty())) {
+                        String key = from.getKey() + "." + to.getKey();
+                        edgeMap.put(key, Integer.valueOf(edge.size()));
+                    }
                 }
             }
         }

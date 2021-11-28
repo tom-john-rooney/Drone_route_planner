@@ -51,11 +51,7 @@ public class App
         w3w.buildGraphFromWords(zones);
         lg.buildGraph(w3w);
 
-        ArrayList<Order> testOrders = (ArrayList<Order>) Arrays.asList(orders.get(0), orders.get(1), orders.get(2));
-
-        for(Order order: testOrders){
-            ArrayList<String> orderShopLocns = menus.getShopLocns(order.contents);
-        }
+        //lg.getW3wPathFromGraph("nests.takes.print")
 
 
 
