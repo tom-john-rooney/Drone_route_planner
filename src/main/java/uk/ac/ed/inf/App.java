@@ -24,6 +24,7 @@ public class App
         Words w3w = new Words("localhost","9898");
         NoFlyZones zones = new NoFlyZones("localhost", "9898");
         Landmarks landmarks = new Landmarks("localhost", "9898");
+        LocationGraph lg = new LocationGraph();
 
         ArrayList<Order> orders = Database.readOrders(input_str);
         ArrayList<Shop> shops = menus.getShopsWithMenus();
@@ -50,8 +51,7 @@ public class App
 
         zones.getZones();
         w3w.buildGraphFromWords(zones);
-        w3w.edgeMapToStr();
-        w3w.edgesToGeoJson();
+        lg.buildGraph(w3w);
 
 
 

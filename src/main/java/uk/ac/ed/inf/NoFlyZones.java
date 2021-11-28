@@ -4,9 +4,7 @@ import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.turf.TurfJoins;
 
-import javax.sound.sampled.Line;
 import java.awt.geom.Line2D;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +71,7 @@ public class NoFlyZones {
      * @param p the Polygon with which intersection between the line is being checked.
      * @return true if the line intersects the Polygon, false otherwise.
      */
-    public boolean lineIntersectsPolygon(Line2D line, Polygon p){
+    private boolean lineIntersectsPolygon(Line2D line, Polygon p){
         List<List<Point>> edges = p.coordinates();
         for(List<Point> edge : edges){
             if(lineIntersectsEdge(line, edge)){
@@ -89,7 +87,7 @@ public class NoFlyZones {
      * @param edge the edge of a Polygon with which intersection between the line is being checked.
      * @return true if the line intersects the edge, false otherwise.
      */
-    public boolean lineIntersectsEdge(Line2D line, List<Point> edge){
+    private boolean lineIntersectsEdge(Line2D line, List<Point> edge){
         ArrayList<Line2D> edgeLines = getEdgeLines(edge);
         for(Line2D edgeLine : edgeLines){
             if(lineIntersectsEdgeLine(line, edgeLine)){
@@ -106,7 +104,7 @@ public class NoFlyZones {
      * @param edgeLine the line of an edge of a Polygon with which intersection between the line is being checked.
      * @return true if the line intersects the edge line, false otherwise.
      */
-    public boolean lineIntersectsEdgeLine(Line2D line, Line2D edgeLine){
+    private boolean lineIntersectsEdgeLine(Line2D line, Line2D edgeLine){
         return line.intersectsLine(edgeLine);
     }
 
@@ -116,7 +114,7 @@ public class NoFlyZones {
      * @param edge the edge whose lines are to be returned
      * @return the lines making up the edge
      */
-    public ArrayList<Line2D> getEdgeLines(List<Point> edge){
+    private ArrayList<Line2D> getEdgeLines(List<Point> edge){
         ArrayList<Line2D> edgeLines = new ArrayList<Line2D>();
         for(int i = 0; i < edge.size()-1; i++){
             List<Double> startCoords = edge.get(i).coordinates();

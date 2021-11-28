@@ -1,11 +1,10 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.*;
-
-import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +13,7 @@ import java.util.regex.Pattern;
  * is implemented in this class.
  */
 public class Words {
+    private static final int W3W_ADDRESS_LEN = 3;
     /** The words directory on the web server */
     private static final String WORDS_DIR = "/words";
     /** The name of the file storing the details of a what3words address on the web server */
@@ -25,16 +25,7 @@ public class Words {
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     /** A HashMap which maps every what3words address on the web server to a What3WordsLoc object */
     private HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
-    /**
-     * A HashMap to represent edges of a graph of the what3words addresses in wordsMap.
-     *
-     * Each key consists of 2 keys from the wordsMap joint by a ".", with the first address
-     * being the start point of the edge and the second being the end. The value at each key is
-     * an ArrayList of What3WordsLoc.LongLat objects, representing a legal path between the 2
-     * addresses making up the joint key. A key (and so, an entry) only exists in this HashMap
-     * where a legal, straight path between the 2 addresses making up the joint key exists.
-     */
-    public HashMap<String, ArrayList<What3WordsLoc.LongLat>> edgeMap = new HashMap<>();
+    private HashMap<String, Integer> edgeMap = new HashMap<String, Integer>();
 
     /** The machine on which the web server is hosted */
     public final String machine;
@@ -120,29 +111,38 @@ public class Words {
                 // a legal path between the 2 locations exists.
                 if(!(edge.isEmpty())){
                     String key = from.getKey() + "." + to.getKey();
-                    edgeMap.put(key, edge);
+                    edgeMap.put(key, Integer.valueOf(edge.size()));
                 }
             }
         }
     }
 
-    // Probably going to delete before submission so doesn't need full documentation.
+    public HashMap<String, What3WordsLoc> getWordsMap() {
+        return wordsMap;
+    }
 
-    //This method just prints the contents of the graph edge map.
-    public void edgeMapToStr(){
-        for(Map.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry: edgeMap.entrySet()){
-            System.out.println("Key:\n"+ entry.getKey() +"\nCoords:\n");
-            for(What3WordsLoc.LongLat point : entry.getValue()){
-                System.out.println(point.toString());
-            }
-            System.out.println("\n");
+    public HashMap<String, Integer> getEdgeMap() {
+        return edgeMap;
+    }
+
+    public static ArrayList<String> splitCombinedKey(String combinedKey){
+        String[] keyWords = combinedKey.split("\\.");
+        if(keyWords.length != 2*W3W_ADDRESS_LEN){
+            System.err.println(String.format("Fatal error in Words.splitCombinedKey: %s is an invalid combined key.", combinedKey));
+            System.exit(1);
+            return null;
         }
+        String keyOne = String.format("%s.%s.%s", keyWords[0], keyWords[1], keyWords[2]);
+        String keyTwo = String.format("%s.%s.%s", keyWords[3], keyWords[4], keyWords[5]);
+        return new ArrayList<String>(Arrays.asList(keyOne, keyTwo));
+
     }
 
     // Probably going to delete before submission so doesn't need full documentation.
 
     // This method converts the edge map to a GeoJson file for testing.
     // A similar idea will be needed for the final drone path map so don't delete too hastily!
+    /*
     public void edgesToGeoJson() {
         ArrayList<Feature> fs = new ArrayList<>();
         for(HashMap.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry : this.edgeMap.entrySet()){
@@ -166,4 +166,5 @@ public class Words {
             e.printStackTrace();
         }
     }
+     */
 }
