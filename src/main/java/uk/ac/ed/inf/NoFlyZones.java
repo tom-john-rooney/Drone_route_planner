@@ -36,11 +36,6 @@ public class NoFlyZones {
         this.port = port;
     }
 
-    public NoFlyZones(){
-        this.machine = WebServer.UNSPECIFIED_MACHINE;
-        this.port = WebServer.UNSPECIFIED_PORT;
-    }
-
     /**
      * Gets the no-fly-zones from the web server and stores them in the zones field.
      */

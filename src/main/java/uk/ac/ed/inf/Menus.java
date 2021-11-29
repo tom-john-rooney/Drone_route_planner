@@ -19,7 +19,7 @@ public class Menus {
     private static final int STANDARD_DELIVERY_PENCE = 50;
     /** A HashMap merging all the menus of each shop in the system into one, with the key being an item name and the value, its price. */
     private HashMap<String, Integer> priceMap = new HashMap<>();
-    /** A HashMap mapping each item to its corresponding shop location*/
+    /** A HashMap mapping each item to its corresponding shop location. */
     private HashMap<String, String> locMap = new HashMap<>();
 
     /** The machine on which the web server is hosted */
@@ -89,6 +89,12 @@ public class Menus {
         }
     }
 
+    /**
+     * Gets the location of the shop selling each item in an order.
+     *
+     * @param orderItems the items in the order
+     * @return an ArrayList of shop locations, in w3w format
+     */
     public ArrayList<String> getShopLocns(ArrayList<String> orderItems) {
         Set<String> orderShops = new HashSet<>();
         for (String item : orderItems) {

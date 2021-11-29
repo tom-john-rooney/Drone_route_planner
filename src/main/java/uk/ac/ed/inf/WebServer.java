@@ -11,8 +11,6 @@ import java.net.http.HttpResponse.BodyHandlers;
  * Methods in this class handle all functionality relating to web server IO.
  */
 public class WebServer {
-    public static final String UNSPECIFIED_MACHINE = "MACHINE UNSPECIFIED";
-    public static final String UNSPECIFIED_PORT = "PORT UNSPECIFIED";
     /** The single HttpClient instance that is used in communication with the server. */
     private static final HttpClient client = HttpClient.newHttpClient();
     /** The response code received from the server when a request with no errors is made */
@@ -99,10 +97,6 @@ public class WebServer {
      */
     public static String buildURL(String machine, String port, String suffix){
         return URL_PREFIX + machine + ":" + port + suffix;
-    }
-
-    public static boolean serverLocUnspeccified(String machine, String port){
-        return (machine == UNSPECIFIED_MACHINE && port == UNSPECIFIED_PORT);
     }
 
 }

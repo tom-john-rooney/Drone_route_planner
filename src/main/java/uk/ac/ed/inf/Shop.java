@@ -32,9 +32,10 @@ public class Shop {
     }
 
     /**
-     * Converts a shop object's menu ArrayList into a HashMap for efficient lookup.
+     * Converts a shop object's menu into a HashMap, with the keys being the items on the menu and the value,
+     * their price.
      *
-     * @return the HashMap version of the menu
+     * @return the HashMap version of the menu mapping items to prices
      */
     public HashMap<String, Integer> getPriceMap(){
         HashMap<String,Integer> priceMap = new HashMap<>();
@@ -44,6 +45,12 @@ public class Shop {
         return priceMap;
     }
 
+    /**
+     * Converts the Shop's menu into a HashMap, with the keys being the items on the menu and the value,
+     * the Shop's location field.
+     *
+     * @return the HashMap version of the menu items to the location
+     */
     public HashMap<String, String> getLocMap(){
         HashMap<String, String> locMap = new HashMap<>();
         for(Item i: this.menu){

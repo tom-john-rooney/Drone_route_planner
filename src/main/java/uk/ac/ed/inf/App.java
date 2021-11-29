@@ -2,6 +2,7 @@ package uk.ac.ed.inf;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -58,7 +59,12 @@ public class App
         locs.add("milky.hers.focus");
         String endLoc = "linked.pads.cigar";
 
-        lg.getW3wPathFromGraph(startLoc, locs, endLoc);
+        List<List<String>> path = lg.getW3wPathFromGraph(startLoc, locs, endLoc);
+        for(List<String> subPath : path){
+            for(String loc: subPath){
+                System.out.println(loc);
+            }System.out.println("\n");
+    }
 
 
 

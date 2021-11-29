@@ -28,6 +28,12 @@ public class JsonParsing {
         return parsedList;
     }
 
+    /**
+     * Takes a geoJSON String for a what3words address and parses it to a What3WordsLoc instance.
+     *
+     * @param wordsDetailsStr the String to be parsed
+     * @return the What3WordsLoc instance corresponding to the String
+     */
     public static What3WordsLoc parseWordsDetails(String wordsDetailsStr){
         return new Gson().fromJson(wordsDetailsStr, What3WordsLoc.class);
     }
