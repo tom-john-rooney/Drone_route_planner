@@ -40,23 +40,43 @@ public class Drone {
     }
 
     // NEED TO FINISH AND DOCUMENT
-    public void makeDelivery(ArrayList<String> pickUpLocs, String deliveryLoc){
+    public ArrayList<What3WordsLoc.LongLat> makeDelivery(ArrayList<String> pickUpLocs, String deliveryLoc){
+        ArrayList<What3WordsLoc.LongLat> deliveryPathLocs = new ArrayList<>();
+        System.out.println("DELIVERY:");
+        System.out.println("  Shops:");
+        for(String loc : pickUpLocs){
+            System.out.println("    " + loc);
+        }
+        System.out.println(String.format("  Delivery: %s", deliveryLoc));
         List<List<String>> w3wPath = lg.getW3wPathFromGraph(this.w3wAddress, pickUpLocs, deliveryLoc);
         for(List<String> subPath : w3wPath){
-            moveAlongSubPath(subPath);
+            ArrayList<What3WordsLoc.LongLat> subPathLocs = moveAlongSubPath(subPath);
+            deliveryPathLocs.addAll(subPathLocs);
         }
+        System.out.println("Delivery complete!\n");
+        return deliveryPathLocs;
     }
 
-    private void moveAlongSubPath(List<String> subPath){
+    private ArrayList<What3WordsLoc.LongLat> moveAlongSubPath(List<String> subPath){
+        ArrayList<What3WordsLoc.LongLat> allSubPathLocs = new ArrayList<>();
+        System.out.println(String.format("Start loc: %s", subPath.get(0)));
         // the drone is already here
         subPath.remove(0);
         for(String w3wAddr : subPath){
             What3WordsLoc.LongLat locOfAddr = w3w.getLocOfAddr(w3wAddr).coordinates;
             ArrayList<What3WordsLoc.LongLat> locsOnRoute = this.position.getPathTo(locOfAddr, this.zones);
+            System.out.println("Subpath locations:");
+            for(What3WordsLoc.LongLat loc: locsOnRoute){
+                System.out.println(loc.toString());
+            }
+            allSubPathLocs.addAll(locsOnRoute);
             for(What3WordsLoc.LongLat loc: locsOnRoute){
                 this.position = loc;
             }
             this.w3wAddress = w3wAddr;
+            System.out.println(String.format("Drone now at: %s", this.w3wAddress));
         }
+        System.out.println("Sub path traversed!");
+        return allSubPathLocs;
     }
 }

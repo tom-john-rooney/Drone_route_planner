@@ -1,6 +1,10 @@
 package uk.ac.ed.inf;
 
 
+import com.mapbox.geojson.*;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -58,14 +62,36 @@ public class App
         locs.add("pest.round.peanut");
         String endLoc = "linked.pads.cigar";
 
-//        List<List<String>> path = lg.getW3wPathFromGraph(startLoc, locs, endLoc);
-//        for(List<String> subPath : path){
-//            for(String loc: subPath){
-//                System.out.println(loc);
-//            }System.out.println("\n");
-        d.makeDelivery(locs, endLoc);
+        ArrayList<What3WordsLoc.LongLat> allLocs = new ArrayList<>();
 
+        for(Order o : orders){
+            ArrayList<What3WordsLoc.LongLat> deliveryPathLocs =  d.makeDelivery(menus.getShopLocns(o.contents), o.deliveryLoc);
+            allLocs.addAll(deliveryPathLocs);
+        }
 
+        ArrayList<Feature> fs = new ArrayList<>();
 
+        ArrayList<Point> points = new ArrayList<>();
+        for(What3WordsLoc.LongLat loc : allLocs){
+            Point pointAsPoint = Point.fromLngLat(loc.lng, loc.lat);
+            points.add(pointAsPoint);
+        }
+        LineString line = LineString.fromLngLats(points);
+        Geometry g = (Geometry) line;
+        Feature f = Feature.fromGeometry(g);
+        fs.add(f);
+        FeatureCollection fc = FeatureCollection.fromFeatures(fs);
+        String geoJsonStr = fc.toJson();
+        try {
+            FileWriter fileWriter = new FileWriter("graph-test.json");
+            fileWriter.write(geoJsonStr);
+            fileWriter.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
+
 }
