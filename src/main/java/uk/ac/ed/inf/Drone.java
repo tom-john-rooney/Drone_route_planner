@@ -39,26 +39,24 @@ public class Drone {
         this.zones = zones;
     }
 
-    /**
-     * Update the most previously visited w3w address for the drone.
-     *
-     * @param newAddr the new address
-     */
-    public void updateAddr(String newAddr){
-        this.w3wAddress = newAddr;
-    }
-
-    /**
-     * Update the drone's current real position.
-     *
-     * @param newPosn the new, real position of the drone
-     */
-    public void updatePosn(What3WordsLoc.LongLat newPosn){
-        this.position = newPosn;
-    }
-
     // NEED TO FINISH AND DOCUMENT
     public void makeDelivery(ArrayList<String> pickUpLocs, String deliveryLoc){
         List<List<String>> w3wPath = lg.getW3wPathFromGraph(this.w3wAddress, pickUpLocs, deliveryLoc);
+        for(List<String> subPath : w3wPath){
+            moveAlongSubPath(subPath);
+        }
+    }
+
+    private void moveAlongSubPath(List<String> subPath){
+        // the drone is already here
+        subPath.remove(0);
+        for(String w3wAddr : subPath){
+            What3WordsLoc.LongLat locOfAddr = w3w.getLocOfAddr(w3wAddr).coordinates;
+            ArrayList<What3WordsLoc.LongLat> locsOnRoute = this.position.getPathTo(locOfAddr, this.zones);
+            for(What3WordsLoc.LongLat loc: locsOnRoute){
+                this.position = loc;
+            }
+            this.w3wAddress = w3wAddr;
+        }
     }
 }

@@ -127,6 +127,11 @@ public class Words {
         return edgeMap;
     }
 
+    public What3WordsLoc getLocOfAddr(String w3wAddr){
+        checkIsWhatThreeWordsAddress(w3wAddr);
+        return wordsMap.get(w3wAddr);
+    }
+
     public static ArrayList<String> splitCombinedKey(String combinedKey){
         String[] keyWords = combinedKey.split("\\.");
         if(keyWords.length != 2*W3W_ADDRESS_LEN){

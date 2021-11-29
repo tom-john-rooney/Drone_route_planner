@@ -21,8 +21,6 @@ public class App
         Words w3w = new Words("localhost","9898");
         NoFlyZones zones = new NoFlyZones("localhost", "9898");
         Landmarks landmarks = new Landmarks("localhost", "9898");
-        LocationGraph lg = new LocationGraph();
-        Drone d = new Drone(What3WordsLoc.LongLat.AT_LOC);
 
         ArrayList<Order> orders = Database.readOrders(input_str);
         Order.sortByValue(orders);
@@ -51,20 +49,21 @@ public class App
 
         zones.getZones();
         w3w.buildGraphFromWords(zones);
-        lg.buildGraph(w3w);
+        LocationGraph lg = new LocationGraph(w3w);
+        Drone d = new Drone(lg, w3w, zones);
 
         String startLoc = "nests.takes.print";
         ArrayList<String> locs = new ArrayList<>();
         locs.add("sketch.spill.puzzle");
-        locs.add("milky.hers.focus");
+        locs.add("pest.round.peanut");
         String endLoc = "linked.pads.cigar";
 
-        List<List<String>> path = lg.getW3wPathFromGraph(startLoc, locs, endLoc);
-        for(List<String> subPath : path){
-            for(String loc: subPath){
-                System.out.println(loc);
-            }System.out.println("\n");
-    }
+//        List<List<String>> path = lg.getW3wPathFromGraph(startLoc, locs, endLoc);
+//        for(List<String> subPath : path){
+//            for(String loc: subPath){
+//                System.out.println(loc);
+//            }System.out.println("\n");
+        d.makeDelivery(locs, endLoc);
 
 
 

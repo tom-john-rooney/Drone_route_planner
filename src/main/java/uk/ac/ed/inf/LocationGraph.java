@@ -46,7 +46,9 @@ public class LocationGraph {
         Set<String> keys = w3w.getWordsMap().keySet();
         for(String key: keys){
             g.addVertex(key);
+            System.out.println(key);
         }
+        System.out.println("vertices done\n");
     }
 
     /** Adds the edges to the graph that exist in w3w's edgeMap*/
@@ -60,7 +62,9 @@ public class LocationGraph {
             String toKey = constituentKeys.get(1);
             DefaultWeightedEdge edge = g.addEdge(fromKey, toKey);
             g.setEdgeWeight(edge, entry.getValue());
+            System.out.println(fromKey + " " + toKey);
         }
+        System.out.println("edges done \n");
     }
 
     /**
