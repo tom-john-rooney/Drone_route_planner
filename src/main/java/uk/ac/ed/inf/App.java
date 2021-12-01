@@ -3,13 +3,11 @@ package uk.ac.ed.inf;
 
 import com.mapbox.geojson.*;
 
+import javax.xml.crypto.Data;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
-
 /**
  * Hello world!
  *
@@ -20,18 +18,13 @@ public class App
     {
         System.out.println("Please enter the date in format dd/mm/yyyy: ");
         Scanner in = new Scanner(System.in);
-        System.out.println("Please enter another date: ");
-        Scanner in2 = new Scanner(System.in);
         String input_str = in.nextLine();
-        String input2 = in2.nextLine();
         Menus menus = new Menus("localhost", "9898");
         Words w3w = new Words("localhost","9898");
         NoFlyZones zones = new NoFlyZones("localhost", "9898");
         Landmarks landmarks = new Landmarks("localhost", "9898");
 
-        ArrayList<Order> orders1 = Database.readOrders(input_str);
-        ArrayList<Order> orders2 = Database.readOrders(input2);
-        orders1.addAll(orders2);
+        ArrayList<Order> orders1 = Database.readOrders(input_str, menus);
         Order.sortByValue(orders1);
         ArrayList<Shop> shops = menus.getShopsWithMenus();
         ArrayList<String> landmarkAddresses = landmarks.getLandmarksAddresses();
