@@ -176,7 +176,7 @@ public class LocationGraph {
      * @param end the vertex at the end of the path
      * @return the shortest path between the 2 as a List of w3w addresses (vertices)
      */
-    private List<String> getShortestPath(String start, String end){
+    public List<String> getShortestPath(String start, String end){
          return DijkstraShortestPath.findPathBetween(g, start, end).getVertexList();
     }
 }
