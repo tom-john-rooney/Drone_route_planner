@@ -4,8 +4,7 @@ import com.mapbox.geojson.*;
 import java.util.ArrayList;
 
 /**
- * The methods in the class handle different kinds of GeoJSON parsing using Mapbox's
- * GeoJSON library.
+ * The methods in the class handle different kinds of GeoJSON parsing using Mapbox's GeoJSON library.
  */
 public class GeoJsonParsing {
 

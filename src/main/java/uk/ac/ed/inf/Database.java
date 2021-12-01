@@ -277,6 +277,8 @@ public class Database {
 
                     buildInsertMoveQuery(start, end, bearing, o.id).execute();
                 }
+                // This code adds a hover move at the end of each order's move.
+                // We don't need to hover upon returning to Appleton tower hence the if statement.
                 if(!(i == delivered.size()-1)) {
                     What3WordsLoc.LongLat oFinalPositon = oPositions.get(oPositions.size() - 1);
                     buildInsertMoveQuery(oFinalPositon, oFinalPositon, What3WordsLoc.LongLat.JUNK_ANGLE, o.id).execute();
@@ -292,6 +294,13 @@ public class Database {
         }
     }
 
+    /**
+     * Builds a PreparedStatement object that will be used to insert the details of a delivery made
+     * into the deliveries table.
+     *
+     * @param o the order that has been delivered
+     * @return a PreparedStatement object, initialised with the relevant details of the order
+     */
     private static PreparedStatement buildInsertDeliveryQuery(Order o){
         try{
             Connection conn = makeConnection();
@@ -307,6 +316,17 @@ public class Database {
         }
     }
 
+    /**
+     * Builds a PreparedStatement object that will be used to insert the details of a move made by the drone into the
+     * flightpath table.
+     *
+     * @param start a What3Words.LongLat object, representing the point at which the drone started the move
+     * @param end a What3Words.LongLat object, representing the point at which the drone ended the move
+     * @param bearing the bearing from start to end
+     * @param orderId the ID of the order being processed at the time of the move
+     * @return a PreparedStatement object, initialised with the relevant details of the move made and the order it was
+     *         made for
+     */
     private static PreparedStatement buildInsertMoveQuery(What3WordsLoc.LongLat start, What3WordsLoc.LongLat end, int bearing, String orderId){
         try{
             Connection conn = makeConnection();

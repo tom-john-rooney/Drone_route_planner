@@ -11,9 +11,7 @@ import java.util.*;
 public class Shop {
     /** The name of the shop */
     public final String name;
-    /** The location of the shop in the form of a what3words address. More information
-     * on what3words can be found here: https://what3words.com/about/
-     */
+    /** The location of the shop in the form of a what3words address. */
     public final String location;
     /** The menu of the shop containing all the items available for order from it. */
     private final ArrayList<Item> menu;

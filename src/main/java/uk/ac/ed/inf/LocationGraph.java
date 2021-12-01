@@ -8,13 +8,24 @@ import java.util.*;
 import static org.jgrapht.GraphTests.isEmpty;
 
 /**
- * Represents the locations the drone can visit as a graph.
+ * Represents the locations the drone can visit as a graph, using the JGraphT library.
  *
  * The vertices of the graph are locations stored on the web server in the 'words' directory i.e.,
  * landmarks, shops, delivery locations etc. An edge exists between 2 vertices if there exists a
  * 'straight' path between them in real life, which does not go through any no-fly-zones. The graph
  * is also weighted; the weight being the approximate number of moves it takes for the drone to move
  * from the location represented by the vertex at one end of the edge, to the other in real life.
+ *
+ * Some notes about the terminology used in this class:
+ *      1. A path is a route for a Drone instance to follow from its current w3w address,
+ *         to a specified terminus. Crucially, a path will have required stops that must be
+ *         made along the route between these 2 locations.
+ *      2. A sub-path is a route between two successive locations specified in a path, e.g. a
+ *         route between the start location and the first stop, the last stop and the destination
+ *         etc. A sub-path has no required stops along the way, but it may contain multiple addresses
+ *         if no direct route between the 2 locations in question exists.
+ *
+ * Please refer back to these definitions when required upon examining the documentation of this class.
  */
 public class LocationGraph {
     /** The actual graph */
@@ -70,9 +81,7 @@ public class LocationGraph {
     /**
      * Finds the shortest path for the drone to follow to visit all the locations it needs to in order to make a delivery.
      *
-     * All inputs are in w3w address form, with the output being a List of Lists of w3wAddress. Each List represents the
-     * addresses the drone needs to visit from one of the specified locations to the next, in order to follow the shortest
-     * overall path.
+     * Please see main class documentation for clarity on what exactly constitutes a path.
      *
      * @param startLoc the w3w address that the drone is currently close to
      * @param pickUpLocs the shop(s) that the drone must visit to pick up the items in the order
@@ -117,7 +126,7 @@ public class LocationGraph {
      * Finds the number of moves that a path between nodes in the graph takes and returns its total
      * weight as the sum of the weights of each edge visited.
      *
-     * Note: 'path' means a route from one node to another, with specified stops along the way.
+     * Please see main class documentation for clarity on what exactly constitutes a path.
      *
      * @param path The path whose weight is to be calculated
      * @return the total weight of each edge traversed along the path
@@ -134,8 +143,7 @@ public class LocationGraph {
      * Calculates the weight of a sub-path in a path. This is the number of moves taken to get from the
      * vertex at the start of the sub-path to the one at the end.
      *
-     * See documentation of 'LocationGraph.getPathWeight' for definition of 'path'. A 'sub-path' is a path between 2
-     * vertices the drone must visit in its 'path'; there are no specified vertices that must be visited along the way.
+     * Please see main class documentation for clarity on what exactly constitutes a path and a sub-path.
      *
      * @param subPath the subpath whose weight is to be calculated
      * @return the total weight of each edge traversed along the sub path

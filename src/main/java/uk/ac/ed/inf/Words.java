@@ -23,6 +23,12 @@ public class Words {
             "[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     /** A HashMap which maps every what3words address on the web server to a What3WordsLoc object */
     private HashMap<String, What3WordsLoc> wordsMap = new HashMap<>();
+    /**
+     * A HashMap which maps 'edges' between w3w addresses to a combined key consisting of the
+     * concatenation of the addresses in question. An edge exists between two addresses where there is
+     * a straight, legal line between the two. The combined key is formed by concatenating the address
+     * at the end of the address to the address at the start, with a "." in between.
+     */
     private HashMap<String, Integer> edgeMap = new HashMap<String, Integer>();
 
     /** The machine on which the web server is hosted */
@@ -117,19 +123,41 @@ public class Words {
         }
     }
 
+    /**
+     * Gets the wordsMap of the Words instance.
+     *
+     * @return wordsMap field of the instance
+     */
     public HashMap<String, What3WordsLoc> getWordsMap() {
         return wordsMap;
     }
 
+    /**
+     * Gets the edgeMap of the Words instance.
+     *
+     * @return edgeMap field of the instance
+     */
     public HashMap<String, Integer> getEdgeMap() {
         return edgeMap;
     }
 
+    /**
+     * Queries the wordsMap for the location associated with a what3words address.
+     *
+     * @param w3wAddr the address to be queried against the wordsMap
+     * @return the location associated with the address if address in wordsMap, null otherwise
+     */
     public What3WordsLoc getLocOfAddr(String w3wAddr){
         checkIsWhatThreeWordsAddress(w3wAddr);
         return wordsMap.get(w3wAddr);
     }
 
+    /**
+     * Splits a combined key of the edgeMap into its 2 constituent what3words addresses.
+     *
+     * @param combinedKey the combined key to be split
+     * @return an ArrayList containing the 2 constituent keys that made up the combined key
+     */
     public static ArrayList<String> splitCombinedKey(String combinedKey){
         String[] keyWords = combinedKey.split("\\.");
         if(keyWords.length != 2*W3W_ADDRESS_LEN){
@@ -142,34 +170,4 @@ public class Words {
         return new ArrayList<String>(Arrays.asList(keyOne, keyTwo));
 
     }
-
-    // Probably going to delete before submission so doesn't need full documentation.
-
-    // This method converts the edge map to a GeoJson file for testing.
-    // A similar idea will be needed for the final drone path map so don't delete too hastily!
-    /*
-    public void edgesToGeoJson() {
-        ArrayList<Feature> fs = new ArrayList<>();
-        for(HashMap.Entry<String, ArrayList<What3WordsLoc.LongLat>> entry : this.edgeMap.entrySet()){
-            ArrayList<Point> points = new ArrayList<>();
-            for(What3WordsLoc.LongLat pointAsLongLat : entry.getValue()){
-                Point pointAsPoint = Point.fromLngLat(pointAsLongLat.lng, pointAsLongLat.lat);
-                points.add(pointAsPoint);
-            }
-            LineString line = LineString.fromLngLats(points);
-            Geometry g = (Geometry) line;
-            Feature f = Feature.fromGeometry(g);
-            fs.add(f);
-        }
-        FeatureCollection fc = FeatureCollection.fromFeatures(fs);
-        String geoJsonStr = fc.toJson();
-        try {
-            FileWriter fileWriter = new FileWriter("graph.json");
-            fileWriter.write(geoJsonStr);
-            fileWriter.close();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-     */
 }

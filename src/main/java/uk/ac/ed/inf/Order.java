@@ -8,10 +8,15 @@ import java.util.Comparator;
  * Represents an order placed by a customer
  */
 public class Order {
+    /** The ID of a dummy, default order instance */
     public static final String DEFAULT_ID = "99999999";
+    /** The customer ID of a dummy, default order instance */
     private static final String DEFAULT_CUSTOMER_ID = "s999999";
+    /** The delivery location of a dummy, default order instance */
     private static final String DEFAULT_DELIV_LOC = "DEFAULT.DELIVERY.LOC";
+    /** The items of a dummy, default order instance */
     private static final ArrayList<String> DEFAULT_ITEMS = new ArrayList<>();
+    /** The value of a dummy, default order instance */
     private static final int DEFAULT_VALUE = -1;
 
     /** The ID of the order */
@@ -42,6 +47,9 @@ public class Order {
         this.value = value;
     }
 
+    /**
+     * Overload of constructor, used to instantiate a default instance of the class.
+     */
     public Order(){
         this.id = DEFAULT_ID;
         this.customerId = DEFAULT_CUSTOMER_ID;

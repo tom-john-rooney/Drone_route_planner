@@ -5,6 +5,17 @@ import java.util.List;
 
 /**
  * Represents the Drone and its movements.
+ *
+ * Some notes about the terminology used in this class:
+ *      1. A path is a route for a Drone instance to follow from its current w3w address,
+ *         to a specified terminus. Crucially, a path will have required stops that must be
+ *         made along the route between these 2 locations.
+ *      2. A sub-path is a route between two successive locations specified in a path, e.g. a
+ *         route between the start location and the first stop, the last stop and the destination
+ *         etc. A sub-path has no required stops along the way, but it may contain multiple addresses
+ *         if no direct route between the 2 locations in question exists.
+ *
+ * Please refer back to these definitions when required upon examining the documentation of this class.
  */
 public class Drone {
     /** The what3words address of Appleton tower */
@@ -51,7 +62,8 @@ public class Drone {
      * finds the shortest path from the drone's current location to the delivery point, with stops at each shop,
      * and moves the drone accordingly. The drone is 'moved' by updating its w3wAddress and position fields. If the
      * drone doesn't have enough battery to complete the delivery and return to base, its position will not be updated
-     * and the delivery not made.
+     * and the delivery not made. Please see main class documentation for clarity on what constitutes a 'path' and a 'sub-path'
+     * in this method.
      *
      * @param pickUpLocs the w3w addresses of shops at which item in the order being delivered are kept
      * @param deliveryLoc the w3w address of the customer's selected delivery location
@@ -59,25 +71,14 @@ public class Drone {
      *         battery to complete the order and return to base
      */
     public ArrayList<What3WordsLoc.LongLat> makeDelivery(ArrayList<String> pickUpLocs, String deliveryLoc){
-        System.out.println(String.format("Moves before delivery: %d", this.numMoves));
-
-        // Keeps record of original location of drone in case there is not enough battery
         String originalAddr = this.w3wAddress;
         What3WordsLoc.LongLat originalPos = this.position;
-
         ArrayList<What3WordsLoc.LongLat> deliveryPathLocs = new ArrayList<>();
-        System.out.println("DELIVERY:");
-        System.out.println("  Shops:");
-        for(String loc : pickUpLocs){
-            System.out.println("    " + loc);
-        }
-        System.out.println(String.format("  Delivery: %s", deliveryLoc));
-        // Shortest path for drone to follow from its w3wAddress to deliveryLoc, in w3w addresses.
+
+        // Shortest path for drone to follow from its w3wAddress to deliveryLoc
         List<List<String>> w3wPath = lg.getW3wPathFromGraph(this.w3wAddress, pickUpLocs, deliveryLoc);
         What3WordsLoc.LongLat delivPoint = w3w.getLocOfAddr(deliveryLoc).coordinates;
 
-        // A sub-path is from one parameter location to the next e.g. from shop to delivery.
-        // Direct path may not exist; may need to visit addresses along the way (hence use of List).
         for(List<String> subPath : w3wPath){
             ArrayList<What3WordsLoc.LongLat> subPathPoints= getPoints(subPath);
             deliveryPathLocs.addAll(subPathPoints);
@@ -85,15 +86,12 @@ public class Drone {
 
         int movesToBase = delivPoint.getPathTo(What3WordsLoc.LongLat.AT_LOC, this.zones).size();
         if(!(enoughBattery(movesToBase, deliveryPathLocs.size()))){
-            System.out.println("Not enough battery for this order!\n");
             this.w3wAddress = originalAddr;
             this.position = originalPos;
             return new ArrayList<>();
         }
 
-        System.out.println("Delivery complete!\n");
         this.numMoves = this.numMoves - (movesToBase + deliveryPathLocs.size());
-        System.out.println(String.format("Moves remaining: %s", this.numMoves));
         return deliveryPathLocs;
     }
 
@@ -129,14 +127,7 @@ public class Drone {
     /**
      * Gets the points for the drone to visit in order to traverse a 'sub-path'.
      *
-     * Note: a 'sub-path' is a path between two of the w3w addresses a drone must visit to
-     *       complete a delivery e.g. between two shops or between a shop and the delivery location
-     *       etc. The full path the drone must follow to deliver an order will consist of several of these
-     *       sub-paths.
-     *
-     *       A 'sub-path' also just be a simple path i.e., a path with only a start and an end; no stops
-     *       along the way. An example could be the drone's path as it returns to base from its current
-     *       w3w address.
+     * Please refer to main class documentation for clarity on what constitutes a sub-path.
      *
      * @param subPath the 'sub-path' the drone is to follow, in the format of a List of w3w addresses
      * @return an ArrayList of What3WordsLoc.LongLat instances, representing the points in space the drone

@@ -14,16 +14,17 @@ import java.util.List;
 public class NoFlyZones {
     /** The directory on the web server at which the details of the no-fly-zones are stored */
     private final String ZONES_DIR = "/buildings/no-fly-zones.geojson";
-    /** Factor used to approximate the line in lineIntersectsZones */
+    /** Index of longitude in a [longitude, latitude] pairing */
     private final int LNG_IND = 0;
+    /** Index of latitude in a [longitude, latitude] pairing */
     private final int LAT_IND = 1;
 
     /** One geojson.Polygon object to represent each no-fly-zone */
     private ArrayList<Polygon> zones = new ArrayList<>();
     /** The machine on which the web server is hosted */
-    public final String machine;
+    private final String machine;
     /** The on the web server to which a connection needs to be made */
-    public final String port;
+    private final String port;
 
     /**
      * Constructor to initialise a new NoFlyZones instance.
