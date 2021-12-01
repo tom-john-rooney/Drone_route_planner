@@ -14,12 +14,16 @@ public class Database {
     private static final String READ_ORDERS_QUERY_STR = "select * from orders where deliveryDate =(?)";
     /** Query to select the contents of an order from the orderDetails table */
     private static final String READ_ORDER_CONTENTS_QUERY_STR = "select * from orderDetails where orderNo =(?)";
+    /** Query to insert a record into the deliveries table */
     private static final String INSERT_DELIVERY_QUERY = "insert into deliveries values (?, ?, ?)";
+    /** Query to insert a record into the flightpath table */
     private static final String INSERT_MOVE_QUERY = "insert into flightpath values (?, ?, ?, ?, ?, ?)";
+    /** Query to create the deliveries table */
     private static final String CREATE_DELIVERIES_QUERY_STR = "create table deliveries("+
             "orderNo char(8),"+
             "deliveredTo varchar(19),"+
             "costInPence int)";
+    /** Query to create the flight path table */
     private static final String CREATE_FLIGHTPATH_QUERY_STR = "create table flightpath("+
             "orderNo char(8),"+
             "fromLongitude double,"+
@@ -27,7 +31,9 @@ public class Database {
             "angle integer,"+
             "toLongitude double,"+
             "toLatitude double)";
+    /** The name of the deliveries table */
     public static final String DELIVERIES = "deliveries";
+    /** The name of the flighpath table */
     public static final String FLIGHTPATH = "flightpath";
 
     /** Address at which the database is hosted */
@@ -167,6 +173,13 @@ public class Database {
         }
     }
 
+    /**
+     * Creates a table in the database with a specified name.
+     *
+     * If the table already exists, it is dropped before being created.
+     *
+     * @param name the name of the table to be created
+     */
     public static void createTable(String name){
         try{
             Connection conn = makeConnection();
@@ -187,6 +200,11 @@ public class Database {
         }
     }
 
+    /**
+     * Deletes a database table, if it already exists.
+     *
+     * @param tableName the table to be deleted
+     */
     private static void deleteIfExists(String tableName){
         String nameLower = tableName.toLowerCase();
         String nameUpper = tableName.toUpperCase();
@@ -205,6 +223,12 @@ public class Database {
         }
     }
 
+    /**
+     * Inserts an ArrayList of orders into the deliveries table, one by one.
+     *
+     * @param ordersDelivered the orders to be inserted into the deliveries table as
+     *                        records
+     */
     public static void insertDeliveries(ArrayList<Order> ordersDelivered){
         try {
             createTable(DELIVERIES);
@@ -217,8 +241,23 @@ public class Database {
         }
     }
 
+    /**
+     * Inserts the moves made by the drone in delivering all orders into the flightpath table.
+     *
+     * Each move in 2D space has its own record inserted into the table, with records for hover moves
+     * also added when the drone reaches a location it must visit to complete an order.
+     *
+     * @param positions an ArrayList of ArrayLists of What3WordsLoc.LongLat objects. Each ArrayList represents the
+     *                  moves made by the drone through 2D space to complete each order it delivered
+     * @param delivered the orders delivered by the drone, whose moves are specified in positions
+     */
     public static void insertFlightPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> positions, ArrayList<Order> delivered){
         try{
+            if(positions.size() != delivered.size()){
+                System.err.println("Fatal error in Database.insertFlightPaths: size of positions and delivered must match.");
+                System.exit(1);
+            }
+
             createTable(FLIGHTPATH);
             System.out.println(String.format("No of position arrays: %d", positions.size()));
             System.out.println(String.format("No of orders: %d", delivered.size()));

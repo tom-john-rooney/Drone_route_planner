@@ -17,6 +17,8 @@ public class WebServer {
     public static final int OK_RESPONSE_CODE = 200;
     /** Every URL the server works with begins with this */
     public static final String URL_PREFIX = "http://";
+    /** The machine on which the server is hosted */
+    public static final String MACHINE = "localhost";
 
     /** Default constructor to prevent instantiation */
     private WebServer(){}
