@@ -8,6 +8,12 @@ import java.util.Comparator;
  * Represents an order placed by a customer
  */
 public class Order {
+    public static final String DEFAULT_ID = "99999999";
+    private static final String DEFAULT_CUSTOMER_ID = "s999999";
+    private static final String DEFAULT_DELIV_LOC = "DEFAULT.DELIVERY.LOC";
+    private static final ArrayList<String> DEFAULT_ITEMS = new ArrayList<>();
+    private static final int DEFAULT_VALUE = -1;
+
     /** The ID of the order */
     public final String id;
     /** The student number of the student who placed the order of format s1234567 */
@@ -25,6 +31,8 @@ public class Order {
      * @param id the ID of the order
      * @param customerId the student number of the student who placed the order
      * @param deliveryLoc the location to which the delivery is to be made in the form of a what3words address
+     * @param contents the items in the order
+     * @param value the total cost of the items in the order + the 50p delivery charge
      */
     public Order(String id, String customerId, String deliveryLoc, ArrayList<String> contents, int value){
         this.id = id;
@@ -32,6 +40,14 @@ public class Order {
         this.deliveryLoc = deliveryLoc;
         this.contents = contents;
         this.value = value;
+    }
+
+    public Order(){
+        this.id = DEFAULT_ID;
+        this.customerId = DEFAULT_CUSTOMER_ID;
+        this.deliveryLoc = DEFAULT_DELIV_LOC;
+        this.contents = DEFAULT_ITEMS;
+        this.value = DEFAULT_VALUE;
     }
 
     /**

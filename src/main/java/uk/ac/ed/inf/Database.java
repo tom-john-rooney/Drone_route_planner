@@ -14,7 +14,8 @@ public class Database {
     private static final String READ_ORDERS_QUERY_STR = "select * from orders where deliveryDate =(?)";
     /** Query to select the contents of an order from the orderDetails table */
     private static final String READ_ORDER_CONTENTS_QUERY_STR = "select * from orderDetails where orderNo =(?)";
-    private static final String INSERT_DELIVERY_QUERY = "insert into deliveries values (? ? ?)";
+    private static final String INSERT_DELIVERY_QUERY = "insert into deliveries values (?, ?, ?)";
+    private static final String INSERT_MOVE_QUERY = "insert into flightpath values (?, ?, ?, ?, ?, ?)";
     private static final String CREATE_DELIVERIES_QUERY_STR = "create table deliveries("+
             "orderNo char(8),"+
             "deliveredTo varchar(19),"+
@@ -216,6 +217,42 @@ public class Database {
         }
     }
 
+    public static void insertFlightPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> positions, ArrayList<Order> delivered){
+        try{
+            createTable(FLIGHTPATH);
+            System.out.println(String.format("No of position arrays: %d", positions.size()));
+            System.out.println(String.format("No of orders: %d", delivered.size()));
+
+            for(int i = 0; i < delivered.size(); i++){
+                Order o = delivered.get(i);
+                ArrayList<What3WordsLoc.LongLat> oPositions = positions.get(i);
+
+                for(int j = 0; j < oPositions.size()-1; j++){
+                    What3WordsLoc.LongLat start = oPositions.get(j);
+                    What3WordsLoc.LongLat end = oPositions.get(j+1);
+                    int bearing = start.getBearingTo(end);
+                    System.out.println(start.toString());
+                    System.out.println(end.toString());
+                    System.out.println(bearing);
+                    System.out.println("\n");
+
+                    buildInsertMoveQuery(start, end, bearing, o.id).execute();
+                }
+                if(!(i == delivered.size()-1)) {
+                    What3WordsLoc.LongLat oFinalPositon = oPositions.get(oPositions.size() - 1);
+                    buildInsertMoveQuery(oFinalPositon, oFinalPositon, What3WordsLoc.LongLat.JUNK_ANGLE, o.id).execute();
+                    System.out.println(oFinalPositon.toString());
+                    System.out.println(oFinalPositon.toString());
+                    System.out.println(What3WordsLoc.LongLat.JUNK_ANGLE);
+
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Fatal error in Database.insertFlightPath: " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
     private static PreparedStatement buildInsertDeliveryQuery(Order o){
         try{
             Connection conn = makeConnection();
@@ -226,6 +263,24 @@ public class Database {
             return psInsertDeliveryQuery;
         } catch (SQLException e) {
             System.err.println("Fatal error in Database.buildInsertDeliveryQuery: " + e.getMessage());
+            System.exit(1);
+            return null;
+        }
+    }
+
+    private static PreparedStatement buildInsertMoveQuery(What3WordsLoc.LongLat start, What3WordsLoc.LongLat end, int bearing, String orderId){
+        try{
+            Connection conn = makeConnection();
+            PreparedStatement psInsertMoveQuery = conn.prepareStatement(INSERT_MOVE_QUERY);
+            psInsertMoveQuery.setString(1, orderId);
+            psInsertMoveQuery.setDouble(2, start.lng);
+            psInsertMoveQuery.setDouble(3, start.lat);
+            psInsertMoveQuery.setInt(4, bearing);
+            psInsertMoveQuery.setDouble(5, end.lng);
+            psInsertMoveQuery.setDouble(6, end.lat);
+            return psInsertMoveQuery;
+        } catch (SQLException e) {
+            System.err.println("Fatal error in Database.buildInsertMoveQuery: " + e.getMessage());
             System.exit(1);
             return null;
         }

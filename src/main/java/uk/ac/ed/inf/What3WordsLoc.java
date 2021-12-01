@@ -71,6 +71,8 @@ public class What3WordsLoc {
             return "longitude: " + this.lng + "\n" + "latitude: " + this.lat;
         }
 
+        public boolean equals(What3WordsLoc.LongLat point){ return (this.lng == point.lng) && (this.lat == point.lat); }
+
         /**
          * Checks if a LongLat instance lies within the confinement area.
          *
@@ -163,6 +165,10 @@ public class What3WordsLoc {
          * @return the bearing to point
          */
         public int getBearingTo(What3WordsLoc.LongLat point){
+            if(this.equals(point)){
+                return JUNK_ANGLE;
+            }
+
             double theta = Math.atan2(point.lat - this.lat, point.lng - this.lng);
             float angle = (float) Math.toDegrees(theta);
             angle = Math.round(angle/ANGLE_SCALE) * ANGLE_SCALE;
@@ -189,14 +195,15 @@ public class What3WordsLoc {
         public ArrayList<What3WordsLoc.LongLat> getPathTo(What3WordsLoc.LongLat point, NoFlyZones zones){
             isPointNull(point);
             // Checks on both to and from points; both most be confined and outside nfz's.
-            if(!(point.isConfined()) || !(this.isConfined()) || zones.pointInZones(this) || zones.pointInZones(point)){
-                System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.getPathTo.\n\nStart point:"+
-                        "\nLongitude %d\nLatitude %d"+
-                        "\n\nEnd point:\nLongitude: %d\nLatitude: %d"+
-                        "\n\nCheck that both points are in confinement area and outside of no-fly-zones.",this.lng, this.lat,point.lng, point.lat));
+            if(!(point.isConfined()) || !(this.isConfined()) || zones.pointInZones(this) || zones.pointInZones(point)) {
+                System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.getPathTo.\n\nStart point:" +
+                        "\nLongitude %d\nLatitude %d" +
+                        "\n\nEnd point:\nLongitude: %d\nLatitude: %d" +
+                        "\n\nCheck that both points are in confinement area and outside of no-fly-zones.", this.lng, this.lat, point.lng, point.lat));
                 System.exit(1);
                 return null;
             }
+
             ArrayList<What3WordsLoc.LongLat> pointsOnPath = new ArrayList<>();
             What3WordsLoc.LongLat currPos = new What3WordsLoc.LongLat(this.lng, this.lat);;
             pointsOnPath.add(currPos);

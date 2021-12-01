@@ -3,7 +3,6 @@ package uk.ac.ed.inf;
 
 import com.mapbox.geojson.*;
 
-import javax.xml.crypto.Data;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,18 +59,32 @@ public class App
         locs.add("pest.round.peanut");
         String endLoc = "linked.pads.cigar";
 
-        ArrayList<What3WordsLoc.LongLat> allLocs = new ArrayList<>();
+        ArrayList<ArrayList<What3WordsLoc.LongLat>> allLocs = new ArrayList<>();
+        ArrayList<Order> delivered = new ArrayList<>();
+
 
         for(Order o : orders1){
             ArrayList<What3WordsLoc.LongLat> deliveryPathLocs =  d.makeDelivery(menus.getShopLocns(o.contents), o.deliveryLoc);
-            allLocs.addAll(deliveryPathLocs);
+            if(!(deliveryPathLocs.isEmpty())) {
+                allLocs.add(deliveryPathLocs);
+                delivered.add(o);
+            }
         }
-        allLocs.addAll(d.returnToBase());
+        allLocs.add(d.returnToBase());
+        Database.insertDeliveries(delivered);
 
+        // need to add a dud order for the final ArrayList in allLocs of moves back to base.
+        delivered.add(new Order());
+        Database.insertFlightPaths(allLocs, delivered);
+
+        ArrayList<What3WordsLoc.LongLat> allLocsAsOne = new ArrayList<>();
+        for(ArrayList<What3WordsLoc.LongLat> orderPositons : allLocs){
+            allLocsAsOne.addAll(orderPositons);
+        }
         ArrayList<Feature> fs = new ArrayList<>();
 
         ArrayList<Point> points = new ArrayList<>();
-        for(What3WordsLoc.LongLat loc : allLocs){
+        for(What3WordsLoc.LongLat loc : allLocsAsOne){
             Point pointAsPoint = Point.fromLngLat(loc.lng, loc.lat);
             points.add(pointAsPoint);
         }
