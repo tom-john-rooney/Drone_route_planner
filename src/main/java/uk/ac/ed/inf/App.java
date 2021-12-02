@@ -15,17 +15,13 @@ public class App
 {
     public static void main( String[] args )
     {
-        Scanner in = new Scanner(System.in);
-        System.out.println("Please enter the machine on which");
-        System.out.println("Please enter the date in format dd/mm/yyyy: ");
-        String input_str = in.nextLine();
+        Menus menus = new Menus(WebServer.MACHINE, args[3]);
+        Words w3w = new Words(WebServer.MACHINE,args[3]);
+        NoFlyZones zones = new NoFlyZones(WebServer.MACHINE, args[3]);
+        Landmarks landmarks = new Landmarks(WebServer.MACHINE, args[3]);
+        Database.setJdcbString(args[4]);
 
-        Menus menus = new Menus("localhost", "9898");
-        Words w3w = new Words("localhost","9898");
-        NoFlyZones zones = new NoFlyZones("localhost", "9898");
-        Landmarks landmarks = new Landmarks("localhost", "9898");
-
-        ArrayList<Order> orders1 = Database.readOrders(input_str, menus);
+        ArrayList<Order> orders1 = Database.readOrders(args[0]+"/"+args[1]+"/"+args[2], menus);
         Order.sortByValue(orders1);
         ArrayList<Shop> shops = menus.getShopsWithMenus();
         ArrayList<String> landmarkAddresses = landmarks.getLandmarksAddresses();

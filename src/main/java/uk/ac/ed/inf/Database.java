@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Methods in this class handle all functionality relating to database IO.
  */
 public class Database {
-
+    public static final String MACHINE_NAME = "localhost";
     /** Query to select all the orders from the orders table on a given date */
     private static final String READ_ORDERS_QUERY_STR = "select * from orders where deliveryDate =(?)";
     /** Query to select the contents of an order from the orderDetails table */
@@ -35,14 +35,34 @@ public class Database {
     public static final String DELIVERIES = "deliveries";
     /** The name of the flighpath table */
     public static final String FLIGHTPATH = "flightpath";
-
-    /** Address at which the database is hosted */
-    private static final String jdbcString = "jdbc:derby://localhost:1527/derbyDB";
+    /** Prefix of address at which database is hosted */
+    private static final String JDBC_PREFIX = "jdbc:derby://";
+    /** Suffix address at which database is hosted */
+    private static final String JDBC_SUFFIX = "/derbyDB";
+    /** The address at which the database is hosted */
+    private static String jdbcString = "";
 
     /**
      * Default constructor to prevent instantiation
      */
     private Database() {
+    }
+
+    /**
+     * Sets the address at which the database is hosted.
+     *
+     * @param port the port to which a connection must be made
+     */
+    public static void setJdcbString(String port){
+        isJdbcStrSet();
+        jdbcString = JDBC_PREFIX + MACHINE_NAME + ":" + port + JDBC_SUFFIX;
+    }
+
+    private static void isJdbcStrSet(){
+        if(!(jdbcString.equals(""))){
+            System.err.println("Fatal error in Database.isJdbcStrSet: setJdbcString must be called before using any Database class methods.");
+            System.exit(1);
+        }
     }
 
     /**
