@@ -98,7 +98,7 @@ public class Database {
         try {
             Connection conn = makeConnection();
             PreparedStatement psReadOrdersQuery = conn.prepareStatement(READ_ORDERS_QUERY_STR);
-            SimpleDateFormat formatter = new SimpleDateFormat("DD-MM-YYYY");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
             java.util.Date parsedDate = formatter.parse(date);
             psReadOrdersQuery.setDate(1, new java.sql.Date(parsedDate.getTime()));
             return psReadOrdersQuery;
