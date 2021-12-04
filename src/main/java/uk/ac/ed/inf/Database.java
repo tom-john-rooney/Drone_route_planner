@@ -98,8 +98,7 @@ public class Database {
         try {
             Connection conn = makeConnection();
             PreparedStatement psReadOrdersQuery = conn.prepareStatement(READ_ORDERS_QUERY_STR);
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            /* may want to move this into a parser method with its own specific try-catch? Not sure. */
+            SimpleDateFormat formatter = new SimpleDateFormat("DD-MM-YYYY");
             java.util.Date parsedDate = formatter.parse(date);
             psReadOrdersQuery.setDate(1, new java.sql.Date(parsedDate.getTime()));
             return psReadOrdersQuery;
@@ -249,11 +248,11 @@ public class Database {
      * @param ordersDelivered the orders to be inserted into the deliveries table as
      *                        records
      */
-    public static void insertDeliveries(ArrayList<Order> ordersDelivered){
+    public static void insertDeliveries(ArrayList<Delivery> ordersDelivered){
         try {
             createTable(DELIVERIES);
-            for (Order o : ordersDelivered) {
-                buildInsertDeliveryQuery(o).execute();
+            for (Delivery d : ordersDelivered) {
+                buildInsertDeliveryQuery(d.orderDelivered).execute();
             }
         } catch (SQLException e) {
             System.err.println("Fatal error in Database.insertDeliveries: " + e.getMessage());
@@ -267,24 +266,24 @@ public class Database {
      * Each move in 2D space has its own record inserted into the table, with records for hover moves
      * also added when the drone reaches a location it must visit to complete an order.
      *
-     * @param positions an ArrayList of ArrayLists of What3WordsLoc.LongLat objects. Each ArrayList represents the
+     * @param flightPath an ArrayList of ArrayLists of What3WordsLoc.LongLat objects. Each ArrayList represents the
      *                  moves made by the drone through 2D space to complete each order it delivered
-     * @param delivered the orders delivered by the drone, whose moves are specified in positions
+     * @param deliveriesMade the orders delivered by the drone, whose moves are specified in positions
      */
-    public static void insertFlightPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> positions, ArrayList<Order> delivered){
+    public static void insertFlightPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> flightPath, ArrayList<Delivery> deliveriesMade){
         try{
-            if(positions.size() != delivered.size()){
+            if(flightPath.size() != deliveriesMade.size()){
                 System.err.println("Fatal error in Database.insertFlightPaths: size of positions and delivered must match.");
                 System.exit(1);
             }
 
             createTable(FLIGHTPATH);
-            System.out.println(String.format("No of position arrays: %d", positions.size()));
-            System.out.println(String.format("No of orders: %d", delivered.size()));
+            System.out.println(String.format("No of position arrays: %d", flightPath.size()));
+            System.out.println(String.format("No of deliveries: %d", deliveriesMade.size()));
 
-            for(int i = 0; i < delivered.size(); i++){
-                Order o = delivered.get(i);
-                ArrayList<What3WordsLoc.LongLat> oPositions = positions.get(i);
+            for(int i = 0; i < deliveriesMade.size(); i++){
+                Delivery d = deliveriesMade.get(i);
+                ArrayList<What3WordsLoc.LongLat> oPositions = flightPath.get(i);
 
                 for(int j = 0; j < oPositions.size()-1; j++){
                     What3WordsLoc.LongLat start = oPositions.get(j);
@@ -295,13 +294,13 @@ public class Database {
                     System.out.println(bearing);
                     System.out.println("\n");
 
-                    buildInsertMoveQuery(start, end, bearing, o.id).execute();
+                    buildInsertMoveQuery(start, end, bearing, d.orderDelivered.id).execute();
                 }
                 // This code adds a hover move at the end of each order's move.
                 // We don't need to hover upon returning to Appleton tower hence the if statement.
-                if(!(i == delivered.size()-1)) {
+                if(!(i == deliveriesMade.size()-1)) {
                     What3WordsLoc.LongLat oFinalPositon = oPositions.get(oPositions.size() - 1);
-                    buildInsertMoveQuery(oFinalPositon, oFinalPositon, What3WordsLoc.LongLat.JUNK_ANGLE, o.id).execute();
+                    buildInsertMoveQuery(oFinalPositon, oFinalPositon, What3WordsLoc.LongLat.JUNK_ANGLE, d.orderDelivered.id).execute();
                     System.out.println(oFinalPositon.toString());
                     System.out.println(oFinalPositon.toString());
                     System.out.println(What3WordsLoc.LongLat.JUNK_ANGLE);

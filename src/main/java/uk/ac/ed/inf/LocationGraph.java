@@ -187,4 +187,20 @@ public class LocationGraph {
     public List<String> getShortestPath(String start, String end){
          return DijkstraShortestPath.findPathBetween(g, start, end).getVertexList();
     }
+
+    /**
+     * Merges a path, into one ArrayList of What3Words.LongLat objects i.e., a single, long 'sub-path'.
+     *
+     * Please see main class documentation for clarity on path/sub-path terminology.
+     *
+     * @param path the path whose sub-paths are to be merged
+     * @return the ArrayList containing the merged sub-paths
+     */
+    public static ArrayList<What3WordsLoc.LongLat> mergeSubPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> path){
+        ArrayList<What3WordsLoc.LongLat> mergedPath = new ArrayList<>();
+        for(ArrayList<What3WordsLoc.LongLat> subPath : path){
+            mergedPath.addAll(subPath);
+        }
+        return mergedPath;
+    }
 }
