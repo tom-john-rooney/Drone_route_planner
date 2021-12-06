@@ -54,12 +54,11 @@ public class Database {
      * @param port the port to which a connection must be made
      */
     public static void setJdcbString(String port){
-        isJdbcStrSet();
         jdbcString = JDBC_PREFIX + MACHINE_NAME + ":" + port + JDBC_SUFFIX;
     }
 
     private static void isJdbcStrSet(){
-        if(!(jdbcString.equals(""))){
+        if(jdbcString.equals("")){
             System.err.println("Fatal error in Database.isJdbcStrSet: setJdbcString must be called before using any Database class methods.");
             System.exit(1);
         }
@@ -75,6 +74,7 @@ public class Database {
      */
     private static Connection makeConnection() {
         try {
+            isJdbcStrSet();
             return DriverManager.getConnection(jdbcString);
         } catch (SQLException e) {
             System.err.println("Fatal error in 'makeConnection': " + e.getMessage());
@@ -296,7 +296,7 @@ public class Database {
 
                     buildInsertMoveQuery(start, end, bearing, d.orderDelivered.id).execute();
                 }
-                // This code adds a hover move at the end of each order's move.
+                // This code adds a hover move at the end of each delivery.
                 // We don't need to hover upon returning to Appleton tower hence the if statement.
                 if(!(i == deliveriesMade.size()-1)) {
                     What3WordsLoc.LongLat oFinalPositon = oPositions.get(oPositions.size() - 1);

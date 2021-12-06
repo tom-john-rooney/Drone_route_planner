@@ -1,6 +1,6 @@
 package uk.ac.ed.inf;
 
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.*;
 
 import java.util.*;
@@ -31,21 +31,33 @@ public class LocationGraph {
     /** The actual graph */
     private final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> g = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
     /** Words instance whose HashMaps contain details of all words stored on the web server and the edges between then */
-    private final Words w3w;
+    private final Words words;
+    private final NoFlyZones zones;
+    private final FloydWarshallShortestPaths floydWarshall;
+    /**
+     * A HashMap which maps the approximate number between w3w addresses to a combined key consisting of the
+     * concatenation of the addresses in question. An edge exists between two addresses where there is
+     * a straight, legal line between the two. The combined key is formed by concatenating the address
+     * at the end of the address to the address at the start, with a "." in between.
+     */
+    private HashMap<String, Integer> weightMap = new HashMap<String, Integer>();
 
     /**
      * Constructor to instantiate a new LocationGraph instance.
      *
-     * @param w3w a Words instance whose edgeMap contains details of all edges that exist and
+     * @param words a Words instance whose edgeMap contains details of all edges that exist and
      *            their weights
      */
-    public LocationGraph(Words w3w){
-        this.w3w = w3w;
+    public LocationGraph(Words words, NoFlyZones zones){
+        this.words = words;
+        this.zones = zones;
+        findEdgeWeights();
         buildGraph();
+        floydWarshall = new FloydWarshallShortestPaths(g);
     }
 
     /** Populates the vertices and edges of the graph using the edgeMap of the w3w field */
-    public void buildGraph(){
+    private void buildGraph(){
         if(isEmpty(g)){
             addVertices();
             addEdges();
@@ -54,7 +66,7 @@ public class LocationGraph {
 
     /** Adds a vertex to the graph for each key (address) stored in w3w's wordsMap */
     private void addVertices(){
-        Set<String> keys = w3w.getWordsMap().keySet();
+        Set<String> keys = words.getWordsMap().keySet();
         for(String key: keys){
             g.addVertex(key);
             System.out.println(key);
@@ -64,11 +76,10 @@ public class LocationGraph {
 
     /** Adds the edges to the graph that exist in w3w's edgeMap*/
     private void addEdges(){
-        HashMap<String, Integer> wordsMap = w3w.getEdgeMap();
-        for (Map.Entry<String, Integer> entry : wordsMap.entrySet()) {
+        for (Map.Entry<String, Integer> entry : weightMap.entrySet()) {
             // Keys in Words.edgeMap consist of the start location's w3w address and the end location's address
             // joined by a "."
-            ArrayList<String> constituentKeys = w3w.splitCombinedKey(entry.getKey());
+            ArrayList<String> constituentKeys = splitWeightMapKey(entry.getKey());
             String fromKey = constituentKeys.get(0);
             String toKey = constituentKeys.get(1);
             DefaultWeightedEdge edge = g.addEdge(fromKey, toKey);
@@ -185,7 +196,7 @@ public class LocationGraph {
      * @return the shortest path between the 2 as a List of w3w addresses (vertices)
      */
     public List<String> getShortestPath(String start, String end){
-         return DijkstraShortestPath.findPathBetween(g, start, end).getVertexList();
+        return floydWarshall.getPath(start, end).getVertexList();
     }
 
     /**
@@ -202,5 +213,49 @@ public class LocationGraph {
             mergedPath.addAll(subPath);
         }
         return mergedPath;
+    }
+
+    /**
+     * Populates the edgeMap with the paths between What3WordsLoc instances.
+     *
+     * Iterates over every pair of entries in the wordsMap and checks if a legal, straight
+     * path between them exists. If it does, an entry is added to the edgeMap with key = start_address
+     * + "." + end_address and value = an ArrayList of What3WordsLoc.LongLat instances, representing
+     * points to which moves are made along the path.
+     */
+    private void findEdgeWeights(){
+        HashMap<String, What3WordsLoc> wordsMap = words.getWordsMap();
+        for (HashMap.Entry<String, What3WordsLoc> from : wordsMap.entrySet()) {
+            for(HashMap.Entry<String, What3WordsLoc> to : wordsMap.entrySet()) {
+                if (!from.equals(to)) {
+                    What3WordsLoc.LongLat fromPoint = from.getValue().coordinates;
+                    What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
+                    ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
+                    // a legal path between the 2 locations exists.
+                    if (!(edge.isEmpty())) {
+                        String key = from.getKey() + "." + to.getKey();
+                        weightMap.put(key, Integer.valueOf(edge.size()));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Splits a combined key of the edgeMap into its 2 constituent what3words addresses.
+     *
+     * @param combinedKey the combined key to be split
+     * @return an ArrayList containing the 2 constituent keys that made up the combined key
+     */
+    private static ArrayList<String> splitWeightMapKey(String combinedKey){
+        String[] keyWords = combinedKey.split("\\.");
+        if(keyWords.length != 2*Words.W3W_ADDRESS_LEN){
+            System.err.println(String.format("Fatal error in Words.splitCombinedKey: %s is an invalid combined key.", combinedKey));
+            System.exit(1);
+            return null;
+        }
+        String keyOne = String.format("%s.%s.%s", keyWords[0], keyWords[1], keyWords[2]);
+        String keyTwo = String.format("%s.%s.%s", keyWords[3], keyWords[4], keyWords[5]);
+        return new ArrayList<String>(Arrays.asList(keyOne, keyTwo));
     }
 }

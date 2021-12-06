@@ -17,7 +17,7 @@ public class Order {
     /** The items of a dummy, default order instance */
     private static final ArrayList<String> DEFAULT_ITEMS = new ArrayList<>();
     /** The value of a dummy, default order instance */
-    private static final int DEFAULT_VALUE = -1;
+    private static final int DEFAULT_VALUE = 0;
 
     /** The ID of the order */
     public final String id;

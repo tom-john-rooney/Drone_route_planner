@@ -37,9 +37,10 @@ public class App
         words.getDetailsFromServer(Drone.AT_W3W_ADDR);
         zones.getZones();
 
-        // Flight path assembled using graph and graph search.
-        words.buildGraphFromWords(zones);
-        LocationGraph lg = new LocationGraph(words);
+        // Real world locations modelled using a graph
+        LocationGraph lg = new LocationGraph(words, zones);
+
+        // Actual flight path calculations
         Drone d = new Drone(lg, words, zones);
         ArrayList<Delivery> deliveriesMade = getDeliveriesMade(orders, menus, d);
         ArrayList<ArrayList<What3WordsLoc.LongLat>> flightPath = getFlightPath(deliveriesMade, d);
@@ -51,6 +52,7 @@ public class App
         Database.insertFlightPaths(flightPath, deliveriesMade);
 
         createGeoJsonOutput(LocationGraph.mergeSubPaths(flightPath), dateStr);
+        calculateMetric(orders, deliveriesMade);
     }
 
     /**
@@ -173,5 +175,21 @@ public class App
         }catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void calculateMetric(ArrayList<Order> orders, ArrayList<Delivery> deliveries){
+        int oTotal = 0;
+        for(Order o : orders){
+            //System.out.println(o.value);
+            oTotal += o.value;
+        }
+        int dTotal = 0;
+        System.out.println("\n");
+        for(Delivery d: deliveries){
+            //System.out.println(d.orderDelivered.value);
+            dTotal += d.orderDelivered.value;
+        }
+        System.out.println(oTotal);
+        System.out.println(dTotal);
     }
 }

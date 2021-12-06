@@ -195,7 +195,7 @@ public class What3WordsLoc {
         public ArrayList<What3WordsLoc.LongLat> getPathTo(What3WordsLoc.LongLat point, NoFlyZones zones){
             isPointNull(point);
             // Checks on both to and from points; both most be confined and outside nfz's.
-            if(!(point.isConfined()) || !(this.isConfined()) || zones.pointInZones(this) || zones.pointInZones(point)) {
+            if(!(point.isConfined()) || !(this.isConfined()) || zones.pointInZones(point)) {
                 System.err.println(String.format("Fatal error in What3WordsLoc.LongLat.getPathTo.\n\nStart point:" +
                         "\nLongitude %d\nLatitude %d" +
                         "\n\nEnd point:\nLongitude: %d\nLatitude: %d" +
@@ -211,9 +211,8 @@ public class What3WordsLoc {
                 int bearing = currPos.getBearingTo(point);
                 What3WordsLoc.LongLat nextPos = currPos.nextPosition(bearing);
                 boolean confined = nextPos.isConfined();
-                boolean inZones = zones.pointInZones(nextPos);
                 boolean intersectsZones = zones.lineIntersectsZones(currPos, nextPos);
-                if(confined && !(inZones) && !(intersectsZones)){
+                if(confined && !(intersectsZones)){
                     pointsOnPath.add(nextPos);
                     currPos = nextPos;
                 }

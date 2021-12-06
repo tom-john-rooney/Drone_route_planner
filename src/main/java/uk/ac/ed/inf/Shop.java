@@ -63,11 +63,11 @@ public class Shop {
      * The methods contained within this class work with ArrayLists of items and
      * focus on manipulating and searching them.
      */
-    public static class Item{
+    private static class Item{
         /** The name of the item */
-        public final String item;
+        private final String item;
         /** The price of the item per unit in pence */
-        public final int pence;
+        private final int pence;
 
         /**
          * Constructor to initialise a new item instance
@@ -75,7 +75,7 @@ public class Shop {
          * @param item the name of the item to be initialised
          * @param pence the price per unit of the item in pence
          */
-        public Item(String item, int pence){
+        private Item(String item, int pence){
             this.item = item;
             this.pence = pence;
         }
