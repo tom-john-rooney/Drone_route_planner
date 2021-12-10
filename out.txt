@@ -76,7 +76,6 @@ pest.round.peanut fund.dreams.years
 army.monks.grapes pest.round.peanut
 eager.them.agenda fund.dreams.years
 blocks.found.civic linked.pads.cigar
-blocks.found.civic less.change.atomic
 looks.clouds.daring surely.native.foal
 eager.them.agenda nests.takes.print
 eager.them.agenda truck.hits.early
@@ -4196,7 +4195,7 @@ longitude: -3.1869424194908187
 latitude: 55.944460397327894
 Drone now at: nests.takes.print
 Sub path traversed!
-Moves remaining at completion: -3
+Moves remaining at completion: 0
 No of position arrays: 20
 No of deliveries: 20
 longitude: -3.186874

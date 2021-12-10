@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Delivery {
     /** The points visited by the drone in making the delivery */
-    public final ArrayList<What3WordsLoc.LongLat> pointsVisited;
+    public final ArrayList<LongLat> pointsVisited;
     /** The order being delivered */
     public final Order orderDelivered;
 
@@ -17,7 +17,7 @@ public class Delivery {
      * @param pointsVisited the points to be visited by the drone when making the delivery
      * @param orderDelivered the order being delivered
      */
-    public Delivery(ArrayList<What3WordsLoc.LongLat> pointsVisited, Order orderDelivered){
+    public Delivery(ArrayList<LongLat> pointsVisited, Order orderDelivered){
         this.pointsVisited = pointsVisited;
         this.orderDelivered = orderDelivered;
     }

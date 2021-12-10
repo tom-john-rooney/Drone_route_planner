@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Methods in this class handle all functionality relating to database IO.
  */
 public class Database {
+    /** The name of the machine on which the database is hosted */
     public static final String MACHINE_NAME = "localhost";
     /** Query to select all the orders from the orders table on a given date */
     private static final String READ_ORDERS_QUERY_STR = "select * from orders where deliveryDate =(?)";
@@ -33,7 +34,7 @@ public class Database {
             "toLatitude double)";
     /** The name of the deliveries table */
     public static final String DELIVERIES = "deliveries";
-    /** The name of the flighpath table */
+    /** The name of the flightpath table */
     public static final String FLIGHTPATH = "flightpath";
     /** Prefix of address at which database is hosted */
     private static final String JDBC_PREFIX = "jdbc:derby://";
@@ -57,6 +58,9 @@ public class Database {
         jdbcString = JDBC_PREFIX + MACHINE_NAME + ":" + port + JDBC_SUFFIX;
     }
 
+    /**
+     * Checks if the jdbcString field of this class has been set.
+     */
     private static void isJdbcStrSet(){
         if(jdbcString.equals("")){
             System.err.println("Fatal error in Database.isJdbcStrSet: setJdbcString must be called before using any Database class methods.");
@@ -270,7 +274,7 @@ public class Database {
      *                  moves made by the drone through 2D space to complete each order it delivered
      * @param deliveriesMade the orders delivered by the drone, whose moves are specified in positions
      */
-    public static void insertFlightPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> flightPath, ArrayList<Delivery> deliveriesMade){
+    public static void insertFlightPaths(ArrayList<ArrayList<LongLat>> flightPath, ArrayList<Delivery> deliveriesMade){
         try{
             if(flightPath.size() != deliveriesMade.size()){
                 System.err.println("Fatal error in Database.insertFlightPaths: size of positions and delivered must match.");
@@ -283,11 +287,11 @@ public class Database {
 
             for(int i = 0; i < deliveriesMade.size(); i++){
                 Delivery d = deliveriesMade.get(i);
-                ArrayList<What3WordsLoc.LongLat> oPositions = flightPath.get(i);
+                ArrayList<LongLat> oPositions = flightPath.get(i);
 
                 for(int j = 0; j < oPositions.size()-1; j++){
-                    What3WordsLoc.LongLat start = oPositions.get(j);
-                    What3WordsLoc.LongLat end = oPositions.get(j+1);
+                    LongLat start = oPositions.get(j);
+                    LongLat end = oPositions.get(j+1);
                     int bearing = start.getBearingTo(end);
                     System.out.println(start.toString());
                     System.out.println(end.toString());
@@ -299,11 +303,11 @@ public class Database {
                 // This code adds a hover move at the end of each delivery.
                 // We don't need to hover upon returning to Appleton tower hence the if statement.
                 if(!(i == deliveriesMade.size()-1)) {
-                    What3WordsLoc.LongLat oFinalPositon = oPositions.get(oPositions.size() - 1);
-                    buildInsertMoveQuery(oFinalPositon, oFinalPositon, What3WordsLoc.LongLat.JUNK_ANGLE, d.orderDelivered.id).execute();
+                    LongLat oFinalPositon = oPositions.get(oPositions.size() - 1);
+                    buildInsertMoveQuery(oFinalPositon, oFinalPositon, LongLat.JUNK_ANGLE, d.orderDelivered.id).execute();
                     System.out.println(oFinalPositon.toString());
                     System.out.println(oFinalPositon.toString());
-                    System.out.println(What3WordsLoc.LongLat.JUNK_ANGLE);
+                    System.out.println(LongLat.JUNK_ANGLE);
 
                 }
             }
@@ -346,7 +350,7 @@ public class Database {
      * @return a PreparedStatement object, initialised with the relevant details of the move made and the order it was
      *         made for
      */
-    private static PreparedStatement buildInsertMoveQuery(What3WordsLoc.LongLat start, What3WordsLoc.LongLat end, int bearing, String orderId){
+    private static PreparedStatement buildInsertMoveQuery(LongLat start, LongLat end, int bearing, String orderId){
         try{
             Connection conn = makeConnection();
             PreparedStatement psInsertMoveQuery = conn.prepareStatement(INSERT_MOVE_QUERY);

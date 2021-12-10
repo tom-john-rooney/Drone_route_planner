@@ -32,7 +32,9 @@ public class LocationGraph {
     private final SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> g = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
     /** Words instance whose HashMaps contain details of all words stored on the web server and the edges between then */
     private final Words words;
+    /** NoFlyZones instance containing the details of all no-fly-zones stored on the web server */
     private final NoFlyZones zones;
+    /** FloydWarshallShortestPaths instance to allow the shortest path through the graph to be calculated using the Floyd Warshall algorithm */
     private final FloydWarshallShortestPaths floydWarshall;
     /**
      * A HashMap which maps the approximate number between w3w addresses to a combined key consisting of the
@@ -45,8 +47,8 @@ public class LocationGraph {
     /**
      * Constructor to instantiate a new LocationGraph instance.
      *
-     * @param words a Words instance whose edgeMap contains details of all edges that exist and
-     *            their weights
+     * @param words a Words instance storing the details of all the w3w addresses read from the web server
+     * @param zones a NoFlyZones instance storing the details of all the no-fly-zones read from the web server
      */
     public LocationGraph(Words words, NoFlyZones zones){
         this.words = words;
@@ -56,7 +58,7 @@ public class LocationGraph {
         floydWarshall = new FloydWarshallShortestPaths(g);
     }
 
-    /** Populates the vertices and edges of the graph using the edgeMap of the w3w field */
+    /** Populates the vertices and edges of the graph */
     private void buildGraph(){
         if(isEmpty(g)){
             addVertices();
@@ -64,7 +66,7 @@ public class LocationGraph {
         }
     }
 
-    /** Adds a vertex to the graph for each key (address) stored in w3w's wordsMap */
+    /** Adds a vertex to the graph for each key (address) stored in the Words instance. */
     private void addVertices(){
         Set<String> keys = words.getWordsMap().keySet();
         for(String key: keys){
@@ -74,7 +76,7 @@ public class LocationGraph {
         System.out.println("vertices done\n");
     }
 
-    /** Adds the edges to the graph that exist in w3w's edgeMap*/
+    /** Adds all edges and their weights found in the weightMap to the graph */
     private void addEdges(){
         for (Map.Entry<String, Integer> entry : weightMap.entrySet()) {
             // Keys in Words.edgeMap consist of the start location's w3w address and the end location's address
@@ -207,9 +209,9 @@ public class LocationGraph {
      * @param path the path whose sub-paths are to be merged
      * @return the ArrayList containing the merged sub-paths
      */
-    public static ArrayList<What3WordsLoc.LongLat> mergeSubPaths(ArrayList<ArrayList<What3WordsLoc.LongLat>> path){
-        ArrayList<What3WordsLoc.LongLat> mergedPath = new ArrayList<>();
-        for(ArrayList<What3WordsLoc.LongLat> subPath : path){
+    public static ArrayList<LongLat> mergeSubPaths(ArrayList<ArrayList<LongLat>> path){
+        ArrayList<LongLat> mergedPath = new ArrayList<>();
+        for(ArrayList<LongLat> subPath : path){
             mergedPath.addAll(subPath);
         }
         return mergedPath;
@@ -228,9 +230,9 @@ public class LocationGraph {
         for (HashMap.Entry<String, What3WordsLoc> from : wordsMap.entrySet()) {
             for(HashMap.Entry<String, What3WordsLoc> to : wordsMap.entrySet()) {
                 if (!from.equals(to)) {
-                    What3WordsLoc.LongLat fromPoint = from.getValue().coordinates;
-                    What3WordsLoc.LongLat toPoint = to.getValue().coordinates;
-                    ArrayList<What3WordsLoc.LongLat> edge = fromPoint.getPathTo(toPoint, zones);
+                    LongLat fromPoint = from.getValue().coordinates;
+                    LongLat toPoint = to.getValue().coordinates;
+                    ArrayList<LongLat> edge = fromPoint.getPathTo(toPoint, zones);
                     // a legal path between the 2 locations exists.
                     if (!(edge.isEmpty())) {
                         String key = from.getKey() + "." + to.getKey();

@@ -26,7 +26,7 @@ public class Drone {
     /** The w3w address of the last location the drone visited */
     private String w3wAddress;
     /** The real position of the drone */
-    private What3WordsLoc.LongLat position;
+    private LongLat position;
     /** The graph of the real world locations between which the drone is moving */
     private LocationGraph lg;
     /** Words instance whose HashMaps have been populated with details of the what3words addresses the drone can visit */
@@ -48,7 +48,7 @@ public class Drone {
     public Drone(LocationGraph lg, Words words, NoFlyZones zones){
         // Starts at Appleton Tower
         this.w3wAddress = this.AT_W3W_ADDR;
-        this.position = What3WordsLoc.LongLat.AT_LOC;
+        this.position = LongLat.AT_LOC;
         this.lg = lg;
         this.words = words;
         this.zones = zones;
@@ -70,21 +70,21 @@ public class Drone {
      * @return an ArrayList of What3Words.LongLat objects; may be empty if the drone doesn't have enough
      *         battery to complete the order and return to base
      */
-    public ArrayList<What3WordsLoc.LongLat> makeDelivery(ArrayList<String> pickUpLocs, String deliveryLoc){
+    public ArrayList<LongLat> makeDelivery(ArrayList<String> pickUpLocs, String deliveryLoc){
         String originalAddr = this.w3wAddress;
-        What3WordsLoc.LongLat originalPos = this.position;
-        ArrayList<What3WordsLoc.LongLat> deliveryPathLocs = new ArrayList<>();
+        LongLat originalPos = this.position;
+        ArrayList<LongLat> deliveryPathLocs = new ArrayList<>();
 
         // Shortest path for drone to follow from its w3wAddress to deliveryLoc
         List<List<String>> w3wPath = lg.getW3wPathFromGraph(this.w3wAddress, pickUpLocs, deliveryLoc);
-        What3WordsLoc.LongLat delivPoint = words.getLocOfAddr(deliveryLoc).coordinates;
+        LongLat delivPoint = words.getLocOfAddr(deliveryLoc).coordinates;
 
         for(List<String> subPath : w3wPath){
-            ArrayList<What3WordsLoc.LongLat> subPathPoints = getPoints(subPath);
+            ArrayList<LongLat> subPathPoints = getPoints(subPath);
             deliveryPathLocs.addAll(subPathPoints);
         }
 
-        int movesToBase = delivPoint.getPathTo(What3WordsLoc.LongLat.AT_LOC, this.zones).size()-1;
+        int movesToBase = delivPoint.getPathTo(LongLat.AT_LOC, this.zones).size()-1;
         int deliveryMoves = (deliveryPathLocs.size()-1) + (w3wPath.size()-1);
         if(!(enoughBattery(movesToBase, deliveryMoves))){
             this.w3wAddress = originalAddr;
@@ -116,9 +116,9 @@ public class Drone {
      *
      * @return the points the drone must visit along the path back to its base
      */
-    public ArrayList<What3WordsLoc.LongLat> returnToBase(){
+    public ArrayList<LongLat> returnToBase(){
         List<String> pathToBase = lg.getShortestPath(this.w3wAddress, AT_W3W_ADDR);
-        ArrayList<What3WordsLoc.LongLat> movesToBase = getPoints(pathToBase);
+        ArrayList<LongLat> movesToBase = getPoints(pathToBase);
         this.numMoves = this.numMoves - movesToBase.size();
         this.w3wAddress = AT_W3W_ADDR;
         System.out.println(String.format("Moves remaining at completion: %d", this.numMoves));
@@ -134,17 +134,17 @@ public class Drone {
      * @return an ArrayList of What3WordsLoc.LongLat instances, representing the points in space the drone
      *         must visit, in order from start to end, to traverse the sub-path
      */
-    private ArrayList<What3WordsLoc.LongLat> getPoints(List<String> subPath){
-        ArrayList<What3WordsLoc.LongLat> pointsToVisit = new ArrayList<>();
+    private ArrayList<LongLat> getPoints(List<String> subPath){
+        ArrayList<LongLat> pointsToVisit = new ArrayList<>();
         System.out.println(String.format("Start loc: %s", subPath.get(0)));
         // The drone is already here.
         subPath.remove(0);
         for(String w3wAddr : subPath){
-            What3WordsLoc.LongLat addrPoint= words.getLocOfAddr(w3wAddr).coordinates;
-            ArrayList<What3WordsLoc.LongLat> pointsBetweenAddrs = moveBetweenPoints(this.position, addrPoint);
+            LongLat addrPoint= words.getLocOfAddr(w3wAddr).coordinates;
+            ArrayList<LongLat> pointsBetweenAddrs = moveBetweenPoints(this.position, addrPoint);
             pointsToVisit.addAll(pointsBetweenAddrs);
             System.out.println("Subpath locations:");
-            for(What3WordsLoc.LongLat loc: pointsBetweenAddrs){
+            for(LongLat loc: pointsBetweenAddrs){
                 System.out.println(loc.toString());
             }
             this.w3wAddress = w3wAddr;
@@ -162,9 +162,9 @@ public class Drone {
      * @return an ArrayList of What3WordsLoc.LongLat instances, each representing a point in space the
      *         drone must visit as it moves from start to end
      */
-    private ArrayList<What3WordsLoc.LongLat> moveBetweenPoints(What3WordsLoc.LongLat start, What3WordsLoc.LongLat end){
-        ArrayList<What3WordsLoc.LongLat> pointsToVisit = start.getPathTo(end, this.zones);
-        for(What3WordsLoc.LongLat point: pointsToVisit){
+    private ArrayList<LongLat> moveBetweenPoints(LongLat start, LongLat end){
+        ArrayList<LongLat> pointsToVisit = start.getPathTo(end, this.zones);
+        for(LongLat point: pointsToVisit){
             this.position = point;
         }
         return pointsToVisit;

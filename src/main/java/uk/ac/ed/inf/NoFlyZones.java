@@ -3,6 +3,7 @@ package uk.ac.ed.inf;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.turf.TurfJoins;
+import com.mapbox.turf.TurfTransformation;
 
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class NoFlyZones {
      * @param to the end point of the line
      * @return true if the line intersects any of the no-fly-zones, false otherwise.
      */
-    public boolean lineIntersectsZones(What3WordsLoc.LongLat from, What3WordsLoc.LongLat to){
+    public boolean lineIntersectsZones(LongLat from, LongLat to){
         Line2D line = new Line2D.Double(from.lng, from.lat, to.lng, to.lat);
         for(Polygon zone : zones){
             if(lineIntersectsPolygon(line, zone)){
@@ -134,7 +135,7 @@ public class NoFlyZones {
      * @param point the point to be checked
      * @return true if loc lies in any of the no-fly-zones stored, false otherwise
      */
-    public boolean pointInZones(What3WordsLoc.LongLat point){
+    public boolean pointInZones(LongLat point){
         for(Polygon zone : this.zones){
             if(pointInPolygon(point, zone)){
                 return true;
@@ -144,12 +145,29 @@ public class NoFlyZones {
     }
 
     /**
+     * Checks if a point is 'too close' to the no-fly-zones.
+     *
+     * We define 'too-close' as being within half a move.
+     *
+     * @param point the point being examined
+     * @return true if it is 'too close', false otherwise
+     */
+    public boolean pointTooCloseToZones(LongLat point){
+        Polygon pointCircleApproximation = TurfTransformation.circle(Point.fromLngLat(point.lng, point.lat), LongLat.MOVE_DISTANCE/2, 16, "degrees");
+        for(Point p : pointCircleApproximation.coordinates().get(0)){
+            if(pointInZones(new LongLat(p.longitude(), p.latitude()))){
+                return true;
+            }
+        }return false;
+    }
+
+    /**
      * Checks if a What3Words.LongLat point lies in a particular no-fly-zone
      * @param point the point to be checked
      * @param zone the no-fly-zone in which loc may or may not lie
      * @return true if loc is inside zone, false otherwise
      */
-    private static boolean pointInPolygon(What3WordsLoc.LongLat point, Polygon zone){
+    private static boolean pointInPolygon(LongLat point, Polygon zone){
         Point p = Point.fromLngLat(point.lng, point.lat);
         return TurfJoins.inside(p, zone);
     }

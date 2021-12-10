@@ -43,7 +43,7 @@ public class App
         // Actual flight path calculations
         Drone d = new Drone(lg, words, zones);
         ArrayList<Delivery> deliveriesMade = getDeliveriesMade(orders, menus, d);
-        ArrayList<ArrayList<What3WordsLoc.LongLat>> flightPath = getFlightPath(deliveriesMade, d);
+        ArrayList<ArrayList<LongLat>> flightPath = getFlightPath(deliveriesMade, d);
 
         // Deliveries made and flightpath written to database.
         Database.insertDeliveries(deliveriesMade);
@@ -118,7 +118,7 @@ public class App
     private static ArrayList<Delivery> getDeliveriesMade(ArrayList<Order> orders, Menus menus, Drone d){
         ArrayList<Delivery> deliveriesMade = new ArrayList<>();
         for(Order o: orders){
-            ArrayList<What3WordsLoc.LongLat> pointsVisitedDeliveringOrder = d.makeDelivery(menus.getShopLocns(o.contents), o.deliveryLoc);
+            ArrayList<LongLat> pointsVisitedDeliveringOrder = d.makeDelivery(menus.getShopLocns(o.contents), o.deliveryLoc);
             // if order has been delivered
             if(!(pointsVisitedDeliveringOrder.isEmpty())) {
                 deliveriesMade.add(new Delivery(pointsVisitedDeliveringOrder, o));
@@ -137,8 +137,8 @@ public class App
      *         within the flight path. Please see the class documentation of LocationGraph for clarity on
      *         path/sub-path terminology.
      */
-    private static ArrayList<ArrayList<What3WordsLoc.LongLat>> getFlightPath(ArrayList<Delivery> deliveriesMade, Drone d){
-        ArrayList<ArrayList<What3WordsLoc.LongLat>> flightPathPoints = new ArrayList<>();
+    private static ArrayList<ArrayList<LongLat>> getFlightPath(ArrayList<Delivery> deliveriesMade, Drone d){
+        ArrayList<ArrayList<LongLat>> flightPathPoints = new ArrayList<>();
         for(Delivery delivery: deliveriesMade){
             flightPathPoints.add(delivery.pointsVisited);
         }
@@ -157,9 +157,9 @@ public class App
      *                         terminology.
      * @param dateStr the date on which the drone is operating, in the format DD-MM-YYYY
      */
-    private static void createGeoJsonOutput(ArrayList<What3WordsLoc.LongLat> mergedFlightPath, String dateStr){
+    private static void createGeoJsonOutput(ArrayList<LongLat> mergedFlightPath, String dateStr){
         ArrayList<Point> points = new ArrayList<>();
-        for(What3WordsLoc.LongLat loc : mergedFlightPath){
+        for(LongLat loc : mergedFlightPath){
             Point pointAsPoint = Point.fromLngLat(loc.lng, loc.lat);
             points.add(pointAsPoint);
         }
