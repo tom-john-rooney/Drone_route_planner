@@ -8,6 +8,7 @@ import java.util.ArrayList;
  */
 public class GeoJsonParsing {
 
+    /** The name of the property representing a location in GeoJSON files */
     private final static String LOCATION_PROPERTY = "location";
 
     /** Default constructor to prevent instantiation */
