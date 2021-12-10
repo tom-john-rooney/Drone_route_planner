@@ -52,7 +52,6 @@ public class App
         Database.insertFlightPaths(flightPath, deliveriesMade);
 
         createGeoJsonOutput(LocationGraph.mergeSubPaths(flightPath), dateStr);
-        calculateMetric(orders, deliveriesMade);
     }
 
     /**
@@ -71,7 +70,7 @@ public class App
             words.getDetailsFromServer(o.deliveryLoc);
             System.out.println(o.deliveryLoc);
         }
-        System.out.println(String.format("READ %d ORDERS FROM DATABASE FOR DATE %s", orders.size(), date));
+        System.out.println(String.format("READ %d ORDERS FROM DATABASE FOR DATE %s\n", orders.size(), date));
         return orders;
     }
 
@@ -88,7 +87,7 @@ public class App
             words.getDetailsFromServer(s.location);
             System.out.println(s.location);
         }
-        System.out.println(String.format("READ %d SHOPS FROM WEBSERVER", shops.size()));
+        System.out.println(String.format("READ %d SHOPS FROM WEBSERVER\n", shops.size()));
     }
 
     /**
@@ -104,7 +103,7 @@ public class App
             words.getDetailsFromServer(landmarkAddress);
             System.out.println(landmarkAddress);
         }
-        System.out.println(String.format("READ %d LANDMARKS FROM WEBSERVER", landmarkAddresses.size()));
+        System.out.println(String.format("READ %d LANDMARKS FROM WEBSERVER\n", landmarkAddresses.size()));
     }
 
     /**
@@ -175,21 +174,5 @@ public class App
         }catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void calculateMetric(ArrayList<Order> orders, ArrayList<Delivery> deliveries){
-        int oTotal = 0;
-        for(Order o : orders){
-            //System.out.println(o.value);
-            oTotal += o.value;
-        }
-        int dTotal = 0;
-        System.out.println("\n");
-        for(Delivery d: deliveries){
-            //System.out.println(d.orderDelivered.value);
-            dTotal += d.orderDelivered.value;
-        }
-        System.out.println(oTotal);
-        System.out.println(dTotal);
     }
 }
