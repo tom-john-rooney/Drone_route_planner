@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
  * is implemented in this class.
  */
 public class Words {
+    /** The number of words in a what3words address. */
     public static final int W3W_ADDRESS_LEN = 3;
     /** The words directory on the web server */
     private static final String WORDS_DIR = "/words";

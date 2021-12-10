@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * This class represents ties all the others together to plan the route
+ * This class ties all the others together to plan the route
  * for the drone on a given day and saving the results of these calculations,
  * communicating with the web-server and database along the way.
  */

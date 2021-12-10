@@ -48,6 +48,11 @@ public class LongLat {
         this.lat = lat;
     }
 
+    /**
+     * An override of toString for the LongLat class
+     *
+     * @return a String representation of the LongLat instance calling it
+     */
     @Override
     public String toString() {
         return "longitude: " + this.lng + "\n" + "latitude: " + this.lat;

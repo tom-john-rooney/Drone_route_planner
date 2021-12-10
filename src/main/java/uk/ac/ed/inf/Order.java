@@ -59,15 +59,6 @@ public class Order {
     }
 
     /**
-     * REMOVE BEFORE SUBMISSION
-     */
-    @Override
-    public String toString() {
-        String contentsString = String.join(", ", this.contents);
-        return String.format(this.id + " " + this.customerId + " " + this.deliveryLoc + " " + contentsString + " " + this.value);
-    }
-
-    /**
      * Sorts an ArrayList of order objects in descending order by their value
      *
      * @param orders the ArrayList of orders to be sorted
